@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<style type="text/css" ></style>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/boostrap.addons.css"/>
+		<link rel="stylesheet" type="text/css" href="css/formular.css"/>
+		
+		
+	</head>
+	<body class="dev-mode">
+		<div class="container">
+			<form action="/rest/test" method="post"  data-form="" data-form-init="" data-form-submit="" data-form-cancel="">	
+				<div class="row form-group" data-form-step-panel="">
+			        <div class="col-xs-12">
+			            <ul class="nav nav-pills nav-justified thumbnail step-panel">
+			             <li data-form-step="form-step-start">
+			                	<a>
+				                    <span class="list-group-item-heading">start</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="1">
+			                	<a>
+				                    <span class="list-group-item-heading">User Info</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="form-step-summary">
+			                	<a>
+			                    	<span class="list-group-item-heading">Summary</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="form-step-submitted">
+			                	<a>
+			                    	<span class="list-group-item-heading">Submitted</span>
+			                    </a>
+			                </li>
+			            </ul>
+			        </div>
+				</div>
+				
+				<div data-form-page=""  data-form-step="1" data-form-condition="">
+					<h3>User Info</h3>
+					<p>	
+						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition=""  data-form-required="">
+							<label class="control-label" for="name">name:</label>							
+	    					<input type="text" class="form-control" name="name" />
+	    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim() != ''">Enter your name!</div>
+	    					<div class="text-info help-block ">If your name "Max", then you must enter your given name!</div>				
+						</div>
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() == 'Max'" data-form-required="">
+							<label for="givenname">given name:</label>
+	    					<input type="text" class="form-control" name="givenname" />
+	    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != 'mustermann'">Your name are not "Mustermann"!</div>					
+						</div>
+					<p>			
+				</div>				
+				<div>
+					<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-button-reset="" type="button" class="btn btn-primary" style="text-align: center;">reset</button>
+					<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+					<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+				</div>
+				
+			</form>
+		</div>
+		
+		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
+		<script type="application/javascript" src="js/bootstrap.min.js"></script>
+		<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
+		<script type="application/javascript" src="js/de.titus.logging.2.1.0.js"></script>
+		<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.js"></script>
+		<script type="text/javascript">
+		var config = [
+			{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender"]},
+			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.StepPanel", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.Condition", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.buttons", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.DataContext", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.ValidationController", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			
+			
+		];
+		
+		
+		de.titus.logging.LoggerFactory.getInstance().setConfig(config);
+		
+		
+		</script>
+	</body>
+</html>

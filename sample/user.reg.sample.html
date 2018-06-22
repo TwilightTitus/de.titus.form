@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style type="text/css"></style>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="css/boostrap.addons.css" />
+<link rel="stylesheet" type="text/css" href="css/formular.css" />
+
+
+</head>
+<body class="">
+	<h1>User Registration</h1>
+	<div class="container">
+		<form class="form-horizontal" action="/rest/test" method="post" data-form="" data-form-init="" data-form-submit="" data-form-cancel="">			
+			<ul class="nav nav-pills nav-justified thumbnail " data-form-step-panel="">
+				<li data-form-step="1">
+					<a>
+						<span class="list-group-item-heading">Registation Data</span>
+					</a>
+				</li>
+				<li data-form-step="2">
+					<a>
+						<span class="list-group-item-heading">Personal Data</span>
+					</a>
+				</li>
+				<li data-form-step="3">
+					<a>
+						<span class="list-group-item-heading">Social Information</span>
+					</a>
+				</li>
+				<li data-form-step="4">
+					<a>
+						<span class="list-group-item-heading">Something about yourself</span>
+					</a>
+				</li>
+				<li data-form-step="form-step-summary">
+					<a>
+						<span class="list-group-item-heading">Summary</span>
+					</a>
+				</li>
+				<li data-form-step="form-step-submitted">
+					<a>
+						<span class="list-group-item-heading">Submitted</span>
+					</a>
+				</li>
+			</ul>
+
+			<div data-form-page="" data-form-step="1">
+				<h3>Registation Data</h3>
+				<section>
+					<div class="form-group has-feedback" data-form-field="loginname" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="loginname">loginname</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="loginname" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="checkLoginName($value)">
+								<span class="label label-danger">Your loginname is not "user"!</span>
+							</div>
+							<div class="text-info">This is a test. Valid loginname is "user"!</div>
+						</div>
+					</div>
+					
+					<div class="form-group has-feedback" data-form-field="password" data-form-required="">
+						<div class="col-xs-12">
+							<label for="password">password</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="password" class="form-control" name="password" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="password != undefined && password.length >= 4">
+								<span class="label label-danger">Your password is not strength enough! min 4 chars</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="password_check" data-form-required="">
+						<div class="col-xs-12">
+							<label for="password_check">confirm password</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="password" class="form-control" name="password_check" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="password == $value">
+								<span class="label label-danger">Password is wrong!</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="displayname" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="displayname">display name</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="displayname" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>					
+					<div class="form-group" data-form-field="avatar">
+						<div class="col-xs-12">
+							<label class="control-label" for="avatar">avatar image</label>
+						</div>
+						<div class="col-xs-12">
+							<div class="input-group has-feedback">
+								 <div class="input-group-btn">
+							    	<span class="btn btn-primary btn-file">
+							    		<input type="file" accept="image/*" />
+							        	<span class="glyphicon glyphicon-picture"></span> 
+							        </span>
+							    </div>
+							    <input type="text" class="form-control" readonly="readonly" name="avatar"/>
+							    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+								<span class="glyphicon glyphicon-remove form-control-feedback"></span>					   
+							</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="test" >
+						<div class="col-xs-12">
+							<label class="control-label" for="test">test</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="test" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>			
+					
+					<div class="form-group has-feedback" data-form-field="anzeige" data-form-condition="test == 'test'">
+						<div class="col-xs-12">
+							<label class="control-label" for="displayname">anzeige</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="anzeige" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>			
+					
+					
+				</section>
+			</div>
+			<div data-form-page="" data-form-step="2">
+				<h3>Personal Data</h3>
+				<section>
+					<div class="form-group has-feedback" data-form-field="name" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="name" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>	
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="familyname" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="familyname">familyname</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="familyname" />
+						    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>		
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="age" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="age">age</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="number" class="form-control" name="age" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div class="label label-danger" data-form-validation="$value >= 0">You are not existing! You are not born!</div>
+							<div class="label label-info" data-form-message="age >= 0 && age < 14">child</div>
+							<div class="label label-info" data-form-message="age >= 14 && age < 18">Teenager</div>
+							<div class="label label-info" data-form-message="age >= 18 && age < 21">young adult</div>
+							<div class="label label-info" data-form-message="age >= 21 && age < 70">adult</div>
+							<div class="label label-info" data-form-message="age >=70 && age < 100">You are really old!</div>
+							<div class="label label-info" data-form-message="age >=110">You are really alive?</div>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div data-form-page="" data-form-step="3">
+				<h3>Social Information</h3>
+				<section>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label">social references:</label>
+							<div data-form-list-field="social" data-form-list-field-min="0">
+								<div data-form-content-template="" class="panel panel-primary">
+									<div class="panel-heading">
+										<div>
+											social reference
+											<button data-form-list-field-action-remove="" type="button" class="btn btn-danger pull-right">remove</button>
+										</div>
+									</div>
+									<section class="panel-body">
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="form-group has-feedback" data-form-field="socaltype" data-form-required="">
+													<div class="col-xs-12">
+														<label class="control-label" for="socaltype">social type</label>
+													</div>
+													<div class="col-xs-12">
+														<select class="form-control" name="socaltype">
+															<option value="" selected="selected">---------</option>
+															<option value="facebook">facebook</option>
+															<option value="google">google</option>
+															<option value="youtube">youtube</option>
+															<option value="instagram">instagram</option>
+														</select>
+														<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+														<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+													</div>
+												</div>
+											</div>
+											<div class="col-xs-12">
+												<div class="form-group has-feedback" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
+													<div class="col-xs-12">
+														<label class="control-label" for="socialid">your social id</label>
+													</div>
+													<div class="col-xs-12">
+														<input type="text" class="form-control" name="socialid" />
+														<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+														<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</section>
+								</div>
+								<div data-form-content-container=""></div>
+								<div>
+									<button data-form-list-field-action-add="" type="button" class="btn btn-primary">add</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>				
+			</div>
+
+			<div data-form-page="" data-form-step="4" data-form-condition="age >= 18">
+				<h3>Something about yourself</h3>
+				<section>
+					<div class="form-group has-feedback" data-form-field="job" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="job">job</label>
+						</div>
+						<div class="col-xs-12">
+							<select class="form-control" name="job">
+								<option value="" selected="selected">---------</option>
+								<option value="student">student</option>
+								<option value="employee">employee</option>
+								<option value="independent">independent</option>
+								<option value="unemployed">unemployed</option>
+							</select>
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name of your school</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="school" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name of your company</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="company" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="row form-buttons">
+				<div class="col-xs-12">
+					<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+					<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+				</div>
+			</div>
+
+		</form>
+	</div>
+
+	<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="application/javascript" src="js/bootstrap.min.js"></script>
+	<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
+	<script type="application/javascript" src="js/de.titus.logging.2.1.0.min.js"></script>
+	<script type="application/javascript" src="js/de.titus.form.js"></script>
+	<script type="application/javascript" src="js/user.reg.sample.js"></script>
+	<script type="text/javascript">
+		var config = [ {
+            "filter" : "",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender" ]
+        }, {
+            "filter" : "de.titus.form.utils.EventUtils",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.StepPanel",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Page",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Condition",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Validation",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.ValidationExpression",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.buttons",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.DataContext",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.fields.SingleField",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }
+
+        ];
+
+        de.titus.logging.LoggerFactory.getInstance().setConfig(config);
+	</script>
+</body>
+</html>

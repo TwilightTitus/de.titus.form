@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style type="text/css"></style>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="css/boostrap.addons.css" />
+<link rel="stylesheet" type="text/css" href="css/formular.css" />
+
+
+</head>
+<body class="dev-mode">
+	<div class="container">
+		<form action="/rest/test" method="post" data-form="" data-form-init="" data-form-submit="" data-form-cancel="">
+			<div class="row form-group" data-form-step-panel="">
+				<div class="col-xs-12">
+					<ul class="nav nav-pills nav-justified thumbnail step-panel">
+						<li data-form-step="form-step-start">
+							<a>
+								<span class="list-group-item-heading">start</span>
+							</a>
+						</li>
+						<li data-form-step="form-step-summary">
+							<a>
+								<span class="list-group-item-heading">Summary</span>
+							</a>
+						</li>
+						<li data-form-step="form-step-submitted">
+							<a>
+								<span class="list-group-item-heading">Submitted</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<div data-form-page="" data-form-step="form-step-start" data-form-condition="">
+				<h3>User Info</h3>
+				<section>
+					<div class="form-group" data-form-field="trigger" data-form-required="">
+						<label class="control-label" for="name">You are a person?</label>
+						<div class="radio">
+							<label>
+								<input type="radio" name="trigger" value="no" />
+								No, i am not a person!
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="trigger" value="yes" />
+								Yes, i am a person!
+							</label>
+						</div>
+					</div>
+					<div class="list-field" data-form-list-field="employees" data-form-condition="trigger != undefined && trigger.trim() == 'yes'" data-form-required="" data-form-list-field-min="1" data-form-list-field-max="4">
+						<div data-form-content-template="" class="panel panel-primary">
+							<div class="panel-heading">
+								<div>
+									employee
+									<button data-form-list-field-action-remove="" type="button" class="btn btn-danger pull-right">remove</button>
+								</div>
+							</div>
+							<section class="panel-body">
+								<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-required="">
+									<label class="control-label" for="name">name:</label>
+									<input type="text" class="form-control" name="name" />
+									<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim() != ''">Enter your name!</div>
+								</div>
+								<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="$item.name != undefined && $item.name.trim() != ''" data-form-required="">
+									<label for="givenname">given name:</label>
+									<input type="text" class="form-control" name="givenname" />
+									<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim() != 'mustermann'">Enter your given name!</div>
+								</div>
+								<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
+									<label for="age">age:</label>
+									<input type="number" class="form-control" name="age" />
+									<div class="text-danger help-block " data-form-validation="$value != undefined && $value.trim() != ''">Enter your age</div>
+									<div class="text-danger help-block " data-form-validation="$value >= 0">You are not born? Really?</div>
+									<div class="text-info help-block " data-form-message="$item.name != undefined && $item.name == 'Child'">Your name is Child? If you are age like a child?</div>
+									<div class="text-info help-block " data-form-message="$item.age == undefined || $item.age == ''">You can enter your age!</div>
+									<div class="text-info help-block " data-form-message="$item.age != undefined && $item.age != '' && $item.age < 14">Your are a child.</div>
+									<div class="text-info help-block " data-form-message="$item.age != undefined && $item.age != '' && $item.age >= 14 && $item.age < 18">Your are a Teenager.</div>
+								</div>
+							</section>
+						</div>
+						<div data-form-content-container=""></div>
+						<div>
+							<button data-form-list-field-action-add="" type="button" class="btn btn-primary pull-left">add</button>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div>
+				<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+				<button data-form-button-reset="" type="button" class="btn btn-primary" style="text-align: center;">reset</button>
+				<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
+				<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+				<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+			</div>
+
+		</form>
+	</div>
+
+	<!-- script type="application/javascript" src="js/jquery-2.1.4.min.js"></script-->
+	<script type="application/javascript" src="js/jquery-2.2.4.js"></script>
+	<script type="application/javascript" src="js/bootstrap.min.js"></script>
+	<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
+	<script type="application/javascript" src="js/de.titus.logging.2.1.0.js"></script>
+	<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.js"></script>
+	<script type="text/javascript">
+		var config = [ {
+            "filter" : "",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender" ]
+        }, {
+            "filter" : "de.titus.form.Formular",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.utils.EventUtils",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.StepPanel",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Page",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.buttons",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Condition",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.ValidationController",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.fields.ContainerField",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.fields.ListField",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.utils.DataUtils",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.DataContext",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.Message",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }
+
+        ];
+
+        de.titus.logging.LoggerFactory.getInstance().setConfig(config);
+	</script>
+</body>
+</html>

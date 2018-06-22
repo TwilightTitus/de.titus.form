@@ -1,0 +1,4 @@
+{"configs":[
+	{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
+	{"filter": "de.titus.form", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]}
+]}

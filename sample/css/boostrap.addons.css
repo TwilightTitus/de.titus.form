@@ -1,0 +1,70 @@
+.input-group.has-feedback .form-control-feedback {
+	right: 0;
+}
+
+[data-form-field]>div {
+	
+}
+
+[data-form-field] .form-control {
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+[data-form-field] .form-control:focus {
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px;
+}
+
+.valid[data-form-field] .form-control {
+	border-color: #3c763d;
+}
+
+.no-value[data-form-field][data-form-required] .form-control, .invalid[data-form-field] .form-control
+	{
+	border-color: #a94442;
+}
+
+.no-value[data-form-field][data-form-required] .form-control:focus,
+	.invalid[data-form-field] .form-control:focus {
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px;
+}
+
+.has-feedback .glyphicon-ok.form-control-feedback {
+	color: #3c763d;
+}
+
+.has-feedback .glyphicon-remove.form-control-feedback {
+	color: #a94442;
+}
+
+.no-value[data-form-field][data-form-required] .glyphicon-ok.form-control-feedback {
+	display: none;
+}
+
+.invalid[data-form-field] .glyphicon-ok.form-control-feedback {
+	display: none;
+}
+
+.valid[data-form-field] .glyphicon-remove.form-control-feedback {
+	display: none;
+}
+
+.btn-file {
+	overflow: hidden;
+}
+
+.btn-file input[type=file] {
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	outline: none;
+	background: white;
+	cursor: inherit;
+	display: block;
+}
