@@ -4,18 +4,30 @@
   "description": "This provides an engine to run an interacive formular with multiple pages, field validation and visial conditions.",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack --config webpack.prod.js && webpack --config webpack.dev.js",
-    "dev-server": "webpack-dev-server --open --config webpack.dev-server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm test && webpack --config webpack.prod.js && webpack --config webpack.dev.js",
+    "dev-server": "webpack-dev-server --open --config webpack.dev-server.js && npm run karma:live",
+    "karma:live": "karma start karma.live-dev.js",
+    "karma:integration": "karma start karma.integration.js",
+    "test": "npm run karma:integration"
   },
   "keywords": [],
   "author": "Frank Schüler",
   "license": "MIT",
   "devDependencies": {
-    "clean-webpack-plugin": "^1.0.1",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14",
+    "jasmine": "^3.4.0",
+    "jasmine-core": "^3.4.0",
+    "karma": "^4.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^3.0.5",
+    "puppeteer": "^1.15.0",
+    "replace-in-file-webpack-plugin": "^1.0.6",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.1",
+    "webpack-dev-server": "^3.3.1",
     "webpack-merge": "^4.2.1"
   },
   "repository": {
@@ -26,7 +38,11 @@
     "url": "https://github.com/TwilightTitus/de.titus.form/issues"
   },
   "homepage": "https://github.com/TwilightTitus/de.titus.form#readme",
-  "dependencies": {
-    "dom-api-extension": "^1.0.0"
+   "dependencies": {
+    "dom-api-extension": "^1.0.2-beta1"
+  },
+  "directories": {
+    "src": "src",
+    "test": "test"
   }
 }
