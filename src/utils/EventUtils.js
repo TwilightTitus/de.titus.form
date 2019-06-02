@@ -1,41 +1,38 @@
-var EventUtils = de.titus.form.utils.EventUtils = {
-	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger(
-			"de.titus.form.utils.EventUtils"),
+import Constants from "src/Constants";
+import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
+
+const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.utils.EventUtils");
+const checkOfUndefined = function(aValue) {
+	if (typeof aValue === "undefined")
+		throw new Error("Error: undefined value");
+	else if (Array.isArray(aValue)){
+		for (let i = 0; i < aValue.length; i++)
+			if (aValue[i] === undefined)
+				throw new Error("Error: undefined value at array index \""	+ i + "\"");
+	} 
+};
+
+
+const EventUtils = {
 	triggerEvent : function(aElement, aEvent, aData) {
-		if (EventUtils.LOGGER.isDebugEnabled())
-			EventUtils.LOGGER.logDebug("triggerEvent(\"" + aEvent + "\")");
+		if (LOGGER.isDebugEnabled())
+			LOGGER.logDebug(["triggerEvent(\"", aEvent , "\")"]);
 
-		EventUtils.__checkOfUndefined(aEvent);
-
-		setTimeout((function(aEvent, aData) {
+		checkOfUndefined(aEvent);
+		requestAnimationFrame((function(aEvent, aData) {
 			if (EventUtils.LOGGER.isDebugEnabled())
-				EventUtils.LOGGER.logDebug([ "fire event event \"", aEvent,
-						"\"\non ", this, "\nwith data \"" + aData + "\"!" ]);
+				EventUtils.LOGGER.logDebug([ "fire event event \"", aEvent,	"\"\non ", this, "\nwith data \"" + aData + "\"!" ]);
 			this.trigger(aEvent, aData);
-		}).bind(aElement, aEvent, aData), 1);
+		}).bind(aElement, aEvent, aData));
 	},
 	handleEvent : function(aElement, aEvent, aCallback, aSelector) {
 		// TODO REFECTORING TO ONE SETTINGS PARAMETER OBJECT
-
 		if (EventUtils.LOGGER.isDebugEnabled())
-			EventUtils.LOGGER.logDebug([ "handleEvent \"", aEvent, "\"\nat ",
-					aElement, "\nwith selector ", aSelector ]);
+			EventUtils.LOGGER.logDebug([ "handleEvent \"", aEvent, "\"\nat ", aElement, "\nwith selector ", aSelector ]);
 
-		EventUtils.__checkOfUndefined(aEvent);
-
-		if (Array.isArray(aEvent))
-			aElement.on(aEvent.join(" "), aSelector, aCallback);
-		else
-			aElement.on(aEvent, aSelector, aCallback);
-	},
-	__checkOfUndefined : function(aValue) {
-		if (Array.isArray(aValue))
-			for (var i = 0; i < aValue.length; i++)
-				if (aValue[i] === undefined)
-					throw new Error("Error: undefined value at array index \""
-							+ i + "\"");
-				else if (aValue === undefined)
-					throw new Error("Error: undefined value");
+		checkOfUndefined(aEvent);
+		aElement.on(aEvent, aSelector, aCallback);
 	}
-
 };
+
+export default EventUtils;

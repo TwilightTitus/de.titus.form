@@ -1,55 +1,52 @@
+const path = require('path');
+const merge = require('webpack-merge');
+const webpackCommon = require('./webpack.common.js');
 
 module.exports = {
-
 	// base path that will be used to resolve all patterns (eg. files,
 	// exclude)
-	basePath : '',
-
+	basePath : "",
 	// frameworks to use
 	// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-	frameworks : [ 'jasmine' ],
-
+	frameworks : [ "jasmine" ],
 	// list of files / patterns to load in the browser
-	files : [ 'test/*Test.js', 'test/*/*Test.js' ],
-
+	files : ["src/**/*.js", "test/index.js", "test/sites/**/*.html" ],
 	// list of files / patterns to exclude
 	exclude : [],
-
-	// preprocess matching files before serving them to the browser
 	// available preprocessors:
 	// https://npmjs.org/browse/keyword/karma-preprocessor
 	preprocessors : {
-		'test/**/*Test.js' : [ 'webpack', 'sourcemap' ]
+		"src/**/*.js" : [ "webpack", "coverage"],
+		"test/*.js" : [ "webpack", "sourcemap"],
+		"test/sites/**/*.html" : [ "html2js" ]
 	},
-
-	webpack : {
-		mode : 'production',
-		devtool : 'inline-source-map'
-	},
-
+	webpack :  merge(webpackCommon, {
+		mode : "development",
+		devtool : "inline-source-map"
+	}),
 	// test results reporter to use
-	// possible values: 'dots', 'progress'
+	// possible values: "dots", "progress"
 	// available reporters: https://npmjs.org/browse/keyword/karma-reporter
-	reporters : [ 'progress' ],
-
-	// web server port
-	port : 9876,
-
-	// enable / disable colors in the output (reporters and logs)
-	colors : true,
-
-	// enable / disable watching file and executing tests whenever any file
-	// changes
-	autoWatch : true,
-	phantomjsLauncher : {
-		exitOnResourceError : true
+	reporters : ["progress", "coverage"],
+	coverageReporter : {
+		dir : 'coverage/',
+		reporters : [
+			{ type: 'html', subdir: 'report-html' },
+			{ type: 'lcov', subdir: 'report-lcov' },
+			{ type: 'cobertura', subdir: '.', file: 'cobertura.txt' },
+			{ type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' },
+			{ type: 'teamcity', subdir: '.', file: 'teamcity.txt' },
+			{ type: 'text', subdir: '.', file: 'text.txt' },
+			{ type: 'text-summary', subdir: '.', file: 'text-summary.txt' }
+		]
 	},
-
-	// Continuous Integration mode
-	// if true, Karma captures browsers, runs the tests and exits
+	port : 9876,
+	colors : true,
+	autoWatch : true,
+	client : {
+		clearContext : true
+	},
 	singleRun : false,
-
-	// Concurrency level
-	// how many browser should be started simultaneous
 	concurrency : Infinity
+// browserNoActivityTimeout: 60000
 };
