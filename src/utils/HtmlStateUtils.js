@@ -2,7 +2,7 @@ import Constants from "src/Constants";
 
 const ASSOCIATEDELEMENTSELECTOR = (function(ELEMENTS) {
 	let selectors = [];
-	for ( var name in Constants.STRUCTURELEMENTS)
+	for ( let name in Constants.STRUCTURELEMENTS)
 		if (ELEMENTS[name].selector)
 			selectors.push(ELEMENTS[name].selector);
 

@@ -2,16 +2,17 @@ import Constants from "src/Constants";
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 import DataContext from "src/DataContext";
 import EventUtils from "src/utils/EventUtils";
-import HtmlStateUtil from "src/utils/HtmlStateUtil";
+import HtmlStateUtil from "src/utils/HtmlStateUtils";
+import Page from "src/Page";
 
 const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.PageController");
 
-const PageController = function(aElement) {
+const PageController = function(aForm) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("constructor");
 
 	this.data = {
-	    element : aElement,
+	    form : aForm,
 	    pages : [],
 	    pageHandles : [],
 	    currentHandle : undefined
@@ -24,8 +25,10 @@ PageController.prototype.__init = function() {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("__init()");
 
-	let formularElement = this.data.element;
-	this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
+	let formularElement = this.data.form.data.element;
+	formularElement.find("[data-form-page]").forEach((function(aPageElement){
+	    this.data.pages.push(new Page(aPageElement), this.form);	    
+	}).bind(this));
 	if(typeof this.data.pages === 'undefined')
 		this.data.pages = [];
 	else if (!Array.isArray(this.data.pages))

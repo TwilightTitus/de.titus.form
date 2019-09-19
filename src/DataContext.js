@@ -45,10 +45,12 @@ DataContext.getContext = function(aElement) {
 };
 
 DataContext.findContext = function(aElement) {
+    
+    //TODO Optimize and Test with DataContext.getContext(aElement.parent("[data-form-data-context] | [data-form]"));
 	if (typeof aElement.attr("data-form-data-context") !== "undefined"|| typeof this.attr("data-form") !== "undefined")
-		return getContext(aElement);
+		return DataContext.getContext(aElement);
 	else
-		return findContext(aElement.parent());
+		return DataContext.findContext(aElement.parent());
 };
 
 DataContext.findParentContext = function(aElement) {

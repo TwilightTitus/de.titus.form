@@ -9,6 +9,11 @@ const Constants = {
 		SUCCESSED : "form-successed",
 		FAILED : "form-failed",
 		STATE_CHANGED : "form-state-changed",
+		
+		STATE_ACTIVE : "form-state-active",
+		STATE_INACTIVE : "form-state-inactive",
+		STATE_ACTIVE_SUMMARY : "form-state-active-summary",
+		STATE_SUBMITED : "form-state-submited",
 
 		ACTION_RESET : "form-action-reset",
 		ACTION_SUBMIT : "form-action-submit",

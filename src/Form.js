@@ -33,9 +33,10 @@ Form.prototype.__init = function() {
 
 	EventUtils.handleEvent(this.data.element, [ EVENTTYPES.ACTION_SUBMIT ], Form.prototype.submit.bind(this));
 
+	this.data.pageController = new PageController(this);
+	
 	this.data.element.Form_StepPanel();
 	this.data.element.Form_FormControls();
-	this.data.element.Form_PageController();
 	this.data.element.Form_initMessages();
 
 	requestAnimationFrame((function() {
