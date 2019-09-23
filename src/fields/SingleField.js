@@ -1,11 +1,11 @@
 import Constants from "src/Constants";
-import LOGGERFactory from "modules/de.titus.logging/src/LOGGERFactory";
+import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 import DataContext from "src/DataContext";
 import EventUtils from "src/utils/EventUtils";
 import HtmlStateUtil from "src/utils/HtmlStateUtils";
 
 
-const LOGGER = LOGGERFactory.getInstance().newLOGGER("de.titus.form.fields.SingleField");
+const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.SingleField");
 
 
 const Field = function(anElement, aContainer, aForm) {
@@ -85,7 +85,7 @@ Field.prototype.__changeValidationState = function(aEvent) {
 	aEvent.preventDefault();
 	aEvent.stopPropagation();
 
-	var valid = aEvent.type == Constants.EVENTS.VALIDATION_VALID;
+	let valid = aEvent.type == Constants.EVENTS.VALIDATION_VALID;
 
 	if (this.data.valid != valid) {
 		if (LOGGER.isDebugEnabled())

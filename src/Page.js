@@ -1,18 +1,21 @@
-import Constants from "src/Constants";
+// dependencies from libs
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
+
+// own dependencies
+import Constants from "src/Constants";
 import DataContext from "src/DataContext";
 import EventUtils from "src/utils/EventUtils";
 import HtmlStateUtil from "src/utils/HtmlStateUtils";
 import FieldUtils from "src/fields/FieldUtils";
 
-const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.Page");
+const LOGGER = LoggerFactory.newLogger("de.titus.form.Page");
 
-const Page = function(aPageElement, aForm){
+const Page = function(aElement, aForm){
     if (LOGGER.isDebugEnabled())
         LOGGER.logDebug("constructor");
     this.data = {
         element : aElement,
-        formular : aForm,
+        formular : aForm,        
         dataContext : undefined,
         type : Constants.TYPES.PAGE,
         name : aElement.attr("data-form-page"),
@@ -22,7 +25,8 @@ const Page = function(aPageElement, aForm){
         valid : undefined,
         fields : []
     };
-    this.data.element.formular_DataContext({
+    
+    new DataContext(this.data.element, {
         data : Page.prototype.getData.bind(this),
         scope : "$page"
     });

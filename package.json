@@ -14,8 +14,8 @@
   "author": "Frank Schüler",
   "license": "MIT",
   "devDependencies": {
-    "jasmine": "^3.4.0",
-    "jasmine-core": "^3.4.0",
+    "jasmine": "^3.5.0",
+    "jasmine-core": "^3.5.0",
     "karma": "^4.3.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.2.0",
@@ -23,6 +23,8 @@
     "karma-safari-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.5",
+    "karma-coverage": "^1.1.2",
+    "karma-html2js-preprocessor": "^1.1.0",
     "puppeteer": "^1.20.0",
     "replace-in-file-webpack-plugin": "^1.0.6",
     "webpack": "^4.40.2",
@@ -40,8 +42,8 @@
   "homepage": "https://github.com/TwilightTitus/de.titus.form#readme",
   "dependencies": {
     "de.titus.core": "^2.0.0-beta2",
-    "dom-api-extension": "^1.0.2-beta8",
-    "de.titus.logging": "^3.0.0-beta1"
+    "de.titus.logging": "^3.0.0-beta2",
+    "dom-api-extension": "^1.0.2-beta8"
   },
   "directories": {
     "test": "test"

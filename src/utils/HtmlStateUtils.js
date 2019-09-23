@@ -1,10 +1,10 @@
 import Constants from "src/Constants";
 
-const ASSOCIATEDELEMENTSELECTOR = (function(ELEMENTS) {
+const ASSOCIATEDELEMENTSELECTOR = (function() {
 	let selectors = [];
 	for ( let name in Constants.STRUCTURELEMENTS)
-		if (ELEMENTS[name].selector)
-			selectors.push(ELEMENTS[name].selector);
+		if (Constants.STRUCTURELEMENTS[name].selector)
+			selectors.push(Constants.STRUCTURELEMENTS[name].selector);
 
 	return selectors.join(", ");
 }());

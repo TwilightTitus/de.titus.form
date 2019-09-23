@@ -5,7 +5,7 @@ import EventUtils from "src/utils/EventUtils";
 import HtmlStateUtil from "src/utils/HtmlStateUtils";
 import Page from "src/Page";
 
-const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.PageController");
+const LOGGER = LoggerFactory.newLogger("de.titus.form.PageController");
 
 const PageController = function(aForm) {
 	if (LOGGER.isDebugEnabled())
@@ -184,5 +184,5 @@ PageController.prototype.toNextPage = function(execute) {
 		this.__toPageHandle(pageHandle);
 };
 
-de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
+export default PageController;
 

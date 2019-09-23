@@ -4,7 +4,7 @@ import ContainerField from "src/fields/ContainerField";
 import ListField from "src/fields/ListField";
 
 const pack = {
-        FieldUtils : Fieldutils,
+        FieldUtils : FieldUtils,
         SingleField : SingleField,
         ContainerField : ContainerField,
         ListField : ListField

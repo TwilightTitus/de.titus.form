@@ -1,11 +1,14 @@
-import Constants from "src/Constants";
+//dependencies from libs
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 import ExpressionResolver from "modules/de.titus.core/src/ExpressionResolver";
+
+//own dependencies
+import Constants from "src/Constants";
 import DataContext from "src/DataContext";
 import EventUtils from "src/utils/EventUtils";
 import HtmlStateUtils from "src/utils/HtmlStateUtils";
 
-const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.Form");
+const LOGGER = LoggerFactory.newLogger("de.titus.form.Form");
 const Expression =  ExpressionResolver.DEFAULT;
 
 
@@ -16,14 +19,15 @@ const Form = function(aElement) {
 	this.data = {
 	    element : aElement,
 	    name : aElement.attr("data-form"),
-	    state : Constants.STATE.INPUT
+	    state : Constants.STATE.INPUT,
+	    pages : []
 	};
 
 	new DataContext(aElement, {
 		data : Form.prototype.getData.bind(this)
 	});
 
-	HtmlStateUtils.doSetInitializing();
+	HtmlStateUtils.doSetInitializing(this.data.element);
 	requestAnimationFrame(Form.prototype.__init.bind(this));
 };
 
@@ -31,18 +35,17 @@ Form.prototype.__init = function() {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("init()");
 
-	EventUtils.handleEvent(this.data.element, [ EVENTTYPES.ACTION_SUBMIT ], Form.prototype.submit.bind(this));
+	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.ACTION_SUBMIT ], Form.prototype.submit.bind(this));
 
-	this.data.pageController = new PageController(this);
-	
-	this.data.element.Form_StepPanel();
-	this.data.element.Form_FormControls();
-	this.data.element.Form_initMessages();
-
-	requestAnimationFrame((function() {
-		EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-		HtmlStateUtils.doSetInitialized();
+	this.data.element.find(Constants.STRUCTURELEMENTS.PAGE.selector).foreach((function(aElement){
+	    this.data.pages.push(new Page(aElement, this));
 	}).bind(this));
+	
+
+	setTimeout((function() {
+		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
+		HtmlStateUtils.doSetInitialized(this.data.element);
+	}).bind(this), 1);
 };
 
 Form.prototype.getData = function(aFilter, aModel) {
@@ -99,17 +102,19 @@ Form.prototype.submit = function() {
 			}
 	
 			if (!hasError) {
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.SUCCESSED);
+				EventUtils.triggerEvent(this.data.element, Constants.EVENTS.STATE_CHANGED);
+				EventUtils.triggerEvent(this.data.element, Constants.EVENTS.SUCCESSED);
 				resolve();
 			} else{
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
+				EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FAILED);
 				reject("submit failed");
 			}
 		} catch (e) {
 			LOGGER.logError(e);
-			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
+			EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FAILED);
 			reject(e);
 		}
 	}).bind(this));
 };
+
+export default Form;

@@ -1,0 +1,67 @@
+
+.initializing {
+	display: none;
+}
+
+[data-form] {
+	display: none;
+}
+
+[data-form].initialized {
+	display: block;
+}
+
+[data-form] [data-form-step-panel] [data-form-step].inactive {
+	display: table-cell;
+}
+
+[data-form] .inactive {
+	display: none;
+}
+[data-form] .active {
+}
+
+[data-form] .valid {
+}
+
+[data-form] .invalid {
+}
+
+.dev-mode [data-form] .valid {
+	border-style: solid;
+	border-width: 1px;
+	border-color: green;
+}
+
+.dev-mode [data-form] .invalid {
+	border-style: solid;
+	border-width: 1px;
+	border-color: red;
+}
+
+[data-form-page] {
+	
+}
+
+[data-form-control] {
+	
+}
+
+
+[data-form-validation] {
+	
+}
+
+[data-form-field] {
+	
+}
+
+[data-form-message] {
+	
+}
+
+.form-buttons {
+	margin-top: 3em;
+	padding-top: 1em;
+	border-top: solid 1px;
+}

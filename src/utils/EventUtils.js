@@ -1,7 +1,8 @@
-import Constants from "src/Constants";
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
+import Constants from "src/Constants";
 
-const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.utils.EventUtils");
+
+const LOGGER = LoggerFactory.newLogger("de.titus.form.utils.EventUtils");
 const checkOfUndefined = function(aValue) {
 	if (typeof aValue === "undefined")
 		throw new Error("Error: undefined value");
@@ -20,18 +21,21 @@ const EventUtils = {
 
 		checkOfUndefined(aEvent);
 		requestAnimationFrame((function(aEvent, aData) {
-			if (EventUtils.LOGGER.isDebugEnabled())
-				EventUtils.LOGGER.logDebug([ "fire event event \"", aEvent,	"\"\non ", this, "\nwith data \"" + aData + "\"!" ]);
+			if (LOGGER.isDebugEnabled())
+				LOGGER.logDebug([ "fire event event \"", aEvent,	"\"\non ", this, "\nwith data \"" + aData + "\"!" ]);
 			this.trigger(aEvent, aData);
 		}).bind(aElement, aEvent, aData));
 	},
 	handleEvent : function(aElement, aEvent, aCallback, aSelector) {
 		// TODO REFECTORING TO ONE SETTINGS PARAMETER OBJECT
-		if (EventUtils.LOGGER.isDebugEnabled())
-			EventUtils.LOGGER.logDebug([ "handleEvent \"", aEvent, "\"\nat ", aElement, "\nwith selector ", aSelector ]);
+		if (LOGGER.isDebugEnabled())
+			LOGGER.logDebug([ "handleEvent \"", aEvent, "\"\nat ", aElement, "\nwith selector ", aSelector ]);
 
 		checkOfUndefined(aEvent);
-		aElement.on(aEvent, aSelector, aCallback);
+		if(aEvent instanceof Array)		
+		    aElement.on(aEvent.join(", "), aSelector, aCallback);
+		else
+		    aElement.on(aEvent, aSelector, aCallback);
 	}
 };
 

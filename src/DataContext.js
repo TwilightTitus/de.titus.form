@@ -1,6 +1,6 @@
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 
-const LOGGER = LoggerFactory.getInstance().newLogger("de.titus.form.DataContext");
+const LOGGER = LoggerFactory.newLogger("de.titus.form.DataContext");
 
 const DataContext = function(aElement, aOption) {
 	this.data = {
