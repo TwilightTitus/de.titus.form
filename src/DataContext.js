@@ -53,7 +53,7 @@ DataContext.findContext = function(aElement) {
 		return DataContext.findContext(aElement.parent());
 };
 
-DataContext.findParentContext = function(aElement) {
+DataContext.findParentDataContext = function(aElement) {
 	return findContext(aElement.parent());
 };
 

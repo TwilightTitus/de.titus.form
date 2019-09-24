@@ -1,55 +1,37 @@
-import Constants from "src/Constants";
+//dependencies from npm
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
-import DataContext from "src/DataContext";
-import EventUtils from "src/utils/EventUtils";
-import HtmlStateUtil from "src/utils/HtmlStateUtils";
+
+//own dependencies
+import Constants from "../Constants";
+import DataContext from "../DataContext";
+import EventUtils from "../utils/EventUtils";
+import HtmlStateUtils from "../utils/HtmlStateUtils";
+import FieldUtils from "./FieldUtils";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.ContainerField");
 
-const Field = function (aElement) {
+const Field = function (anElement, aContainer, aForm) {
     if (LOGGER.isDebugEnabled())
         LOGGER.logDebug("constructor");
 
     this.data = {
-        element : aElement,
-        dataContext : undefined,
-        name : (aElement.attr("data-form-container-field") || "").trim(),
+        element : anElement,
+        container : aContainer,
+        dataContext : aContainer.data.dataContext,
+        name : (anElement.attr("data-form-container-field") || "").trim(),
         active : false,
-        required : (aElement.attr("data-form-required") !== undefined),
-        requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
+        required : (anElement.attr("data-form-required") !== undefined),
+        requiredOnActive : (anElement.attr("data-form-required") === "on-condition-true"),
         condition : undefined,
         // always valid, because it's only a container
         valid : undefined,
         fields : []
     };
-
-    this.data.element.formular_DataContext({
+    
+    this.data.dataContext = new DataContext(this.data.element, {
         data : Field.prototype.getData.bind(this),
         scope : "$container"
     });
-    this.hide();
-    setTimeout(Field.prototype.__init.bind(this), 1);
-};
-
-Field.prototype.__init = function () {
-    if (LOGGER.isDebugEnabled())
-        LOGGER.logDebug("init()");
-
-    this.data.dataContext = this.data.element.formular_findParentDataContext();
-    EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET,
-            EVENTTYPES.CONDITION_NOT_MET ],
-            Field.prototype.__changeConditionState.bind(this));
-    EventUtils.handleEvent(this.data.element, [
-            EVENTTYPES.CONDITION_STATE_CHANGED,
-            EVENTTYPES.VALIDATION_STATE_CHANGED ],
-            Field.prototype.__handleValidationEvent.bind(this), "*");
-
-    this.data.fields = this.data.element.formular_field_utils_getSubFields();
-
-    this.data.element.formular_Condition();
-
-    EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-    this.doValidate(true);
 };
 
 Field.prototype.__changeConditionState = function (aEvent) {
@@ -61,7 +43,7 @@ Field.prototype.__changeConditionState = function (aEvent) {
     aEvent.stopPropagation();
 
     var condition = false;
-    if (aEvent.type == EVENTTYPES.CONDITION_MET)
+    if (aEvent.type == Constants.EVENTS.CONDITION_MET)
         condition = true;
 
     if (this.data.condition != condition) {
@@ -72,7 +54,7 @@ Field.prototype.__changeConditionState = function (aEvent) {
             this.hide();
 
         EventUtils.triggerEvent(this.data.element,
-                EVENTTYPES.CONDITION_STATE_CHANGED);
+                Constants.EVENTS.CONDITION_STATE_CHANGED);
     }
     this.doValidate(true);
 };
@@ -89,63 +71,56 @@ Field.prototype.__handleValidationEvent = function (aEvent) {
 Field.prototype.doValidate = function (force) {
     if (LOGGER.isDebugEnabled())
         LOGGER.logDebug([ "doValidate()  for \"", this.data.name ]);
-
-    var oldValid = this.data.valid;
-    if (typeof this.data.fields === 'undefined' || this.data.fields.length == 0)
-        this.data.valid = true;
-    else if (!this.data.condition
-            && (!this.data.required || this.data.requiredOnActive))
-        this.data.valid = true;
-    else
-        this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(
-                this.data.fields, force);
-
-    if (oldValid != this.data.valid) {
-        if (this.data.valid)
-            this.data.element.formular_utils_SetValid();
-        else
-            this.data.element.formular_utils_SetInvalid();
-
-        EventUtils.triggerEvent(this.data.element,
-                EVENTTYPES.VALIDATION_STATE_CHANGED);
-    }
+//
+//    var oldValid = this.data.valid;
+//    if (typeof this.data.fields === 'undefined' || this.data.fields.length == 0)
+//        this.data.valid = true;
+//    else if (!this.data.condition
+//            && (!this.data.required || this.data.requiredOnActive))
+//        this.data.valid = true;
+//    else
+//        this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
+//
+//    if (oldValid != this.data.valid) {
+//        if (this.data.valid)
+//            //this.data.element.formular_utils_SetValid();
+//            ;
+//        else
+//            //this.data.element.formular_utils_SetInvalid();
+//            ;
+//
+//        EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
+//    }
 
     return this.data.valid;
 };
 
-Field.prototype.hide = function () {
+Field.prototype.__inactive = function() {
     if (LOGGER.isDebugEnabled())
-        LOGGER.logDebug("hide ()");
-
+        LOGGER.logDebug("__inactive()");
+    
     this.data.active = false;
-    this.data.element.formular_utils_SetInactive();
-    for (var i = 0; i < this.data.fields.length; i++)
-        this.data.fields[i].hide();
+    HtmlStateUtils.doSetInactive(this.data.element);
 
 };
 
-Field.prototype.show = function () {
+Field.prototype.__active = function() {
     if (LOGGER.isDebugEnabled())
-        LOGGER.logDebug("show ()");
-    if (this.data.condition) {
-        this.data.element.formular_utils_SetActive();
-        for (var i = 0; i < this.data.fields.length; i++)
-            this.data.fields[i].show();
+        LOGGER.logDebug("__active ()");
 
+    if (this.data.condition) {
+        HtmlStateUtils.doSetActive(this.data.element);
         this.data.active = true;
     }
 };
 
-Field.prototype.summary = function () {
+Field.prototype.__summary = function() {
     if (LOGGER.isDebugEnabled())
-        LOGGER.logDebug("summary ()");
-    if (this.data.condition) {
-        for (var i = 0; i < this.data.fields.length; i++)
-            this.data.fields[i].summary();
-
-        this.data.element.formular_utils_SetActive();
-    }
+        LOGGER.logDebug("__summary ()");
+    
+    HtmlStateUtils.doSetActive(this.data.element);
 };
+
 
 Field.prototype.getData = function (aFilter) {
     if (LOGGER.isDebugEnabled())
@@ -174,5 +149,34 @@ Field.prototype.getData = function (aFilter) {
 
 };
 
+const FieldBuilder = function(anElement, aContainer, aForm){
+    return new Promise(function(resolve){
+        requestAnimationFrame((function(){
+            if (LOGGER.isDebugEnabled())
+                LOGGER.logDebug("init()");
+            
+            this.__inactive();
+            
+            EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET,
+                Constants.EVENTS.CONDITION_NOT_MET ],
+                Field.prototype.__changeConditionState.bind(this));
+            EventUtils.handleEvent(this.data.element, [
+                Constants.EVENTS.CONDITION_STATE_CHANGED,
+                Constants.EVENTS.VALIDATION_STATE_CHANGED ],
+                Field.prototype.__handleValidationEvent.bind(this), "*");
+            
+            FieldUtils.buildChildFields(this.data.element,this,this.data.form)
+            .then((function(theFields){
+                this.data.fields = theFields;
+                //this.data.element.formular_Condition();
+                
+                EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
+                this.doValidate(true);
+                resolve(this);
+            }).bind(this));            
+        }).bind(new Field(anElement, aContainer, aForm)));
+    });
+};
 
-export default Field;
+export {Field, FieldBuilder};
+export default FieldBuilder;

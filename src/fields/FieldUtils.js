@@ -2,44 +2,58 @@ import Constants from "src/Constants";
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 
 // Field Types
-import SingleField from "src/fields/SingleField";
-import ContainerField from "src/fields/ContainerField";
-import ListField from "src/fields/ListField";
+import SingleFieldBuilder from "src/fields/SingleField";
+import ContainerFieldBuilder from "src/fields/ContainerField";
+import ListFieldBuilder from "src/fields/ListField";
 
 
+const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.FieldUtils");
 const FIELDSELECTORS = [ Constants.STRUCTURELEMENTS.SINGLEFIELD.selector, Constants.STRUCTURELEMENTS.CONTAINERFIELD.selector, Constants.STRUCTURELEMENTS.LISTFIELD.selector ].join(", ");
 
 
-const buildField = function(anElement, aContainer, aForm) {     
-    let field = anElement.data("de.titus.form.Field");
-    if (!field) {
-        if (this.is("[data-form-field]"))
-            field = new SingleField(anElement, aConatiner, aForm);
-        else if (this.is("[data-form-container-field]"))
-            field = new ContainerField(anElement, aConatiner, aForm);
-        else if (this.is("[data-form-list-field]"))
-            field = new ListField(anElement, aConatiner, aForm);
-
-        if (field)
-            anElement.data("de.titus.form.Field", field);
-    }
-
-    return field;
+const buildField = function(anElement, aContainer, aForm) {
+    if(LOGGER.isDebugEnabled)
+        LOGGER.logDebug(["buildField()", anElement, aContainer, aForm]);
+    
+    return new Promise(function(){
+        let field = anElement.data("de.titus.form.Field");
+        if(typeof field !== "undefined")
+            return field;
+        
+        let builder = undefined;        
+        if (anElement.is(Constants.STRUCTURELEMENTS.SINGLEFIELD.selector))
+            builder = SingleFieldBuilder;
+        else if (anElement.is(Constants.STRUCTURELEMENTS.CONTAINERFIELD.selector))
+            builder = ContainerFieldBuilder;
+        else if (anElement.is(Constants.STRUCTURELEMENTS.LISTFIELD.selector))
+            builder = ListFieldBuilder;
+        else
+            return;
+        
+        return builder(anElement, aContainer, aForm).then(function(aField){
+            anElement.data("de.titus.form.Field", aField);            
+            return aField;
+        });
+    });
 };
 
 const buildChildFields = function(anElement, aContainer, aForm) {
-	let result = [];
-	anElement.children.forEach((function(aParent, aContainer, aForm, anElement) {
-		if (anElement.is(Field.FIELDSELECTORS))
-			result.push(buildField(anElement, aContainer, aForm));
-		else {
-			let children = getChildFields(anElement, aContainer, aForm);
-			if (children)
-				this.concat(children);
-		}
-	}).bind(result, anElement, aContainer, aForm));
-
-	return result;
+    if(LOGGER.isDebugEnabled)
+        LOGGER.logDebug(["buildChildFields()", anElement, aContainer, aForm]); 
+    
+    let results = [];
+    for(let i = 0; i < anElement.children.length; i++){
+        let item = anElement.children.item(i);
+        if (item.is(FIELDSELECTORS))
+            results.push(buildField(item, aContainer, aForm));
+        else {
+            let fields = buildChildFields(item, aContainer, aForm);
+            if (fields)
+                results.concat(fields);
+        }
+    }
+    
+    return Promise.all(results);
 };
 
 const getAssociatedField = function(anElement) {

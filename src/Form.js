@@ -3,10 +3,11 @@ import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 import ExpressionResolver from "modules/de.titus.core/src/ExpressionResolver";
 
 //own dependencies
-import Constants from "src/Constants";
-import DataContext from "src/DataContext";
-import EventUtils from "src/utils/EventUtils";
-import HtmlStateUtils from "src/utils/HtmlStateUtils";
+import Constants from "./Constants";
+import DataContext from "./DataContext";
+import EventUtils from "./utils/EventUtils";
+import HtmlStateUtils from "./utils/HtmlStateUtils";
+import PagerBuilder from "./Pager";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.Form");
 const Expression =  ExpressionResolver.DEFAULT;
@@ -19,33 +20,22 @@ const Form = function(aElement) {
 	this.data = {
 	    element : aElement,
 	    name : aElement.attr("data-form"),
-	    state : Constants.STATE.INPUT,
-	    pages : []
-	};
+	    state : Constants.STATE.INPUT	    
+	};	
 
-	new DataContext(aElement, {
+	this.data.dataContext = new DataContext(aElement, {
 		data : Form.prototype.getData.bind(this)
 	});
+	
+	
+	
 
 	HtmlStateUtils.doSetInitializing(this.data.element);
-	requestAnimationFrame(Form.prototype.__init.bind(this));
+	
 };
 
 Form.prototype.__init = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("init()");
-
-	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.ACTION_SUBMIT ], Form.prototype.submit.bind(this));
-
-	this.data.element.find(Constants.STRUCTURELEMENTS.PAGE.selector).foreach((function(aElement){
-	    this.data.pages.push(new Page(aElement, this));
-	}).bind(this));
 	
-
-	setTimeout((function() {
-		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
-		HtmlStateUtils.doSetInitialized(this.data.element);
-	}).bind(this), 1);
 };
 
 Form.prototype.getData = function(aFilter, aModel) {
@@ -117,4 +107,30 @@ Form.prototype.submit = function() {
 	}).bind(this));
 };
 
-export default Form;
+const FormBuilder = function(aElement){
+  return new Promise(function(resolve){
+      requestAnimationFrame((function(){
+          if (LOGGER.isDebugEnabled())
+              LOGGER.logDebug("init()");
+
+          EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.ACTION_SUBMIT ], Form.prototype.submit.bind(this));
+
+          PagerBuilder(this)
+          .then((function(pager){
+              this.data.pager = pager;
+              return this;
+          }).bind(this))
+          .then((function(){
+              EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
+              HtmlStateUtils.doSetInitialized(this.data.element);
+              resolve(this);
+          }).bind(this));
+      }).bind(new Form(aElement)));
+  });
+};
+
+export {Form, FormBuilder};
+export default FormBuilder;
+
+
+

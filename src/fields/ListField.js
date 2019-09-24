@@ -1,52 +1,45 @@
-import Constants from "src/Constants";
+//dependencies from npm
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
-import DataContext from "src/DataContext";
-import EventUtils from "src/utils/EventUtils";
-import HtmlStateUtil from "src/utils/HtmlStateUtils";
+
+//own dependencies
+import Constants from "../Constants";
+import DataContext from "../DataContext";
+import EventUtils from "../utils/EventUtils";
+import HtmlStateUtils from "../utils/HtmlStateUtils";
+import FieldUtils from "./FieldUtils";
+
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.ListField");
 
-const Field = function(aElement) {
+const Field = function(anElement, aContainer, aForm) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("constructor");
 
 	this.data = {
-	    element : aElement,
+	    element : anElement,
+	    form : aForm,
+	    container : aContainer,
 	    dataContext : undefined,
-	    name : (aElement.attr("data-form-list-field") || "").trim(),
-	    template : aElement.find("[data-form-content-template]").detach(),
-	    contentContainer : aElement.find("[data-form-content-container]"),
-	    addButton : aElement.find("[data-form-list-field-action-add]"),
-	    required : (aElement.attr("data-form-required") !== undefined),
-	    requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
-	    min : parseInt(aElement.attr("data-form-list-field-min") || "0"),
-	    max : parseInt(aElement.attr("data-form-list-field-max") || "0"),
+	    name : (anElement.attr("data-form-list-field") || "").trim(),
+	    template : anElement.find("[data-form-content-template]"),
+	    contentContainer : anElement.find("[data-form-content-container]"),
+	    addButton : anElement.find("[data-form-list-field-action-add]"),
+	    required : (anElement.attr("data-form-required") !== undefined),
+	    requiredOnActive : (anElement.attr("data-form-required") === "on-condition-true"),
+	    min : parseInt(anElement.attr("data-form-list-field-min") || "0"),
+	    max : parseInt(anElement.attr("data-form-list-field-max") || "0"),
 	    condition : undefined,
 	    valid : undefined,
 	    items : []
 	};
+	this.data.template.parent().remove(this.data.template);
+	
 
-	this.data.element.formular_DataContext({
+	this.data.dataContext = new DataContext(this.data.element, {
 	    data : Field.prototype.getData.bind(this),
 	    scope : "$list"
 	});
-	this.hide();
-	setTimeout(Field.prototype.__init.bind(this), 1);
-};
-Field.prototype.__init = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("init()");
-
-	this.data.dataContext = this.data.element.formular_findParentDataContext();
-	EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
-	EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Field.prototype.__handleValidationEvent.bind(this), "*");
-
-	this.data.element.formular_Condition();
-
-	EventUtils.handleEvent(this.data.addButton, [ "click" ], Field.prototype.__addItem.bind(this));
-
-	EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-	this.doValidate();
+	this.__inactive();
 };
 
 Field.prototype.__addItem = function(aEvent) {
@@ -85,7 +78,7 @@ Field.prototype.__initializeItem = function(aItem) {
 	aItem.element.formular_initMessages();
 
 	aItem.element.formular_utils_SetInitialized();
-	EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
+	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALUE_CHANGED);
 	this.doValidate();
 	this.__doCheckAddButton();
 };
@@ -104,7 +97,7 @@ Field.prototype.__removeItem = function(aEvent) {
 			// this.doValidate();
 			this.__handleValidationEvent(aEvent);
 			this.__doCheckAddButton();
-			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
+			EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALUE_CHANGED);
 			return;
 		}
 	}
@@ -126,7 +119,7 @@ Field.prototype.__changeConditionState = function(aEvent) {
 	aEvent.stopPropagation();
 
 	var condition = false;
-	if (aEvent.type == EVENTTYPES.CONDITION_MET)
+	if (aEvent.type == Constants.EVENTS.CONDITION_MET)
 		condition = true;
 
 	if (this.data.condition != condition) {
@@ -136,7 +129,7 @@ Field.prototype.__changeConditionState = function(aEvent) {
 		else
 			this.hide();
 
-		EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
+		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.CONDITION_STATE_CHANGED);
 	}
 };
 
@@ -145,9 +138,9 @@ Field.prototype.__handleValidationEvent = function(aEvent) {
 	this.doValidate();
 
 	if (this.data.valid != oldValid)
-		EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
+		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
 
-	de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALIDATED);
+	de.titus.form.utils.EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALIDATED);
 };
 
 
@@ -182,43 +175,36 @@ Field.prototype.__isListItemsValid = function() {
 	return true;
 };
 
-Field.prototype.hide = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("hide ()");
+Field.prototype.__inactive = function() {
+    if (LOGGER.isDebugEnabled())
+        LOGGER.logDebug("__inactive()");
+    
+    this.data.active = false;
+    HtmlStateUtils.doSetInactive(this.data.element);
 
-	this.data.element.formular_utils_SetInactive();
-	for (var i = 0; i < this.data.items.length; i++) {
-		var item = this.data.items[i];
-		item.field.hide();
-	}
 };
 
-Field.prototype.show = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("show ()");
-	if (this.data.condition) {
-		this.data.element.formular_utils_SetActive();
-		for (var i = 0; i < this.data.items.length; i++) {
-			var item = this.data.items[i];
-			item.field.show();
-		}
-	}
-	this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetActive();
-	this.__doCheckAddButton();
+Field.prototype.__active = function() {
+    if (LOGGER.isDebugEnabled())
+        LOGGER.logDebug("__active ()");
+
+    if (this.data.condition) {
+        HtmlStateUtils.doSetActive(this.data.element);
+        this.data.active = true;
+        
+        this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetActive();
+        this.__doCheckAddButton();
+    }
 };
 
-Field.prototype.summary = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("summary ()");
-	if (this.data.condition) {
-		for (var i = 0; i < this.data.items.length; i++) {
-			var item = this.data.items[i];
-			item.field.summary();
-		}
-		this.data.element.formular_utils_SetActive();
-	}
-	this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetInactive();
-	this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
+Field.prototype.__summary = function() {
+    if (LOGGER.isDebugEnabled())
+        LOGGER.logDebug("__summary ()");
+    
+//    this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetInactive();
+//    this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
+    
+    HtmlStateUtils.doSetActive(this.data.element);
 };
 
 Field.prototype.getData = function(aFilter) {
@@ -252,4 +238,26 @@ Field.prototype.getExample = function(aFilter) {
 	// TODO
 };
 
-export default Field;
+const FieldBuilder = function(anElement, aContainer, aForm){
+    return new Promise(function(resolve){
+        requestAnimationFrame((function(){            
+            if (LOGGER.isDebugEnabled())
+                LOGGER.logDebug("init()");
+
+            EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
+            EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_STATE_CHANGED, Constants.EVENTS.VALIDATION_STATE_CHANGED, Constants.EVENTS.FIELD_VALUE_CHANGED ], Field.prototype.__handleValidationEvent.bind(this), "*");
+
+            //this.data.element.formular_Condition();
+
+            EventUtils.handleEvent(this.data.addButton, [ "click" ], Field.prototype.__addItem.bind(this));
+
+            EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
+            this.doValidate();            
+            
+            resolve(this);
+        }).bind(new Field(anElement, aContainer, aForm)));        
+    });
+};
+
+export {Field, FieldBuilder};
+export default FieldBuilder;

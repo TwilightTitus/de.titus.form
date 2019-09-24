@@ -1,16 +1,16 @@
 //import public libs
 import "modules/dom-api-extension";
 import "modules/de.titus.logging/browser-index";
-import "src/logging"
+import "./logging"
 
 //packages
-import utils from "src/utils";
-//import fields from "src/fields";
+import utils from "./utils";
+//import fields from "./fields";
 
 //Classes
-import Constants from "src/Constants";
-import DataContext from "src/DataContext";
-import Form from "src/Form";
+import Constants from "./Constants";
+import DataContext from "./DataContext";
+import {Form, FormBuilder} from "./Form";
 
 
 const Package = {
@@ -21,7 +21,8 @@ const Package = {
 	//Classes
 	Constants : Constants,
 	DataContext : DataContext,
-	Form : Form	
+	Form : Form,
+	FormBuilder : FormBuilder
 };
 
 export default Package;

@@ -16,6 +16,7 @@ const Field = function(anElement, aContainer, aForm) {
 	    element : anElement,
 	    container : aContainer,
 	    form : aForm,
+	    parentDataContext : aContainer.data.dataContext,
 	    dataContext : undefined,
 	    name : (anElement.attr("data-form-field") || "").trim(),
 	    type : (anElement.attr("data-form-field-type") || "default").trim(),
@@ -26,32 +27,31 @@ const Field = function(anElement, aContainer, aForm) {
 	    controller : undefined
 	};
 	
-	new DataContext(anElement, {
-        data : Field.prototype.getData.bind(this),
-        scope : "$field"
-    });
-	this.__hide();
-
-	requestAnimationFrame(Field.prototype.__init.bind(this), 1);
+	this.__init();
 };
 
 Field.prototype.__init = function() {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("init()");
+	
+	this.data.dataContext = new DataContext(this.data.element, {
+        data : Field.prototype.getData.bind(this),
+        scope : "$field"
+    });
 
-	this.data.dataContext = DataContext.findParentDataContext(this.data.element);
-	this.data.controller = de.titus.form.Registry.getFieldController(this.data.type, this.data.element);
+	//this.data.controller = de.titus.form.Registry.getFieldController(this.data.type, this.data.element);
 	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
 	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.VALIDATION_VALID, Constants.EVENTS.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
 
-	EventUtils.handleEvent(this.data.container, [Constants.EVENTS.STATE_ACTIVE], Field.prototype.__active.bind(this));
-    EventUtils.handleEvent(this.data.container, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
-    EventUtils.handleEvent(this.data.container, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
+	let containerElement = this.data.container.data.element;
+	EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE], Field.prototype.__active.bind(this));
+    EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
+    EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
 	
 	
 	
-	this.data.element.formular_Condition();
-	this.data.element.formular_Validation();
+//	this.data.element.formular_Condition();
+//	this.data.element.formular_Validation();
 
 	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
 };
@@ -162,4 +162,14 @@ Field.prototype.getData = function(aFilter) {
 	};
 };
 
-export default Field;
+const FieldBuilder = function(anElement, aContainer, aForm){
+    return new Promise(function(resolve){
+        requestAnimationFrame(function(){
+            //TODO init method into builder function
+            resolve(new Field(anElement, aContainer, aForm));
+        });        
+    });
+};
+
+export {Field, FieldBuilder};
+export default FieldBuilder;
