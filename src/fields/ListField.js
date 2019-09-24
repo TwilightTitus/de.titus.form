@@ -1,5 +1,6 @@
 //dependencies from npm
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
+import UUID from "modules/de.titus.core/src/UUID";
 
 //own dependencies
 import Constants from "../Constants";
@@ -21,7 +22,7 @@ const Field = function(anElement, aContainer, aForm) {
 	    container : aContainer,
 	    dataContext : undefined,
 	    name : (anElement.attr("data-form-list-field") || "").trim(),
-	    template : anElement.find("[data-form-content-template]"),
+	    template : anElement.find("[data-form-content-template]").first(),
 	    contentContainer : anElement.find("[data-form-content-container]"),
 	    addButton : anElement.find("[data-form-list-field-action-add]"),
 	    required : (anElement.attr("data-form-required") !== undefined),
@@ -32,7 +33,7 @@ const Field = function(anElement, aContainer, aForm) {
 	    valid : undefined,
 	    items : []
 	};
-	this.data.template.parent().remove(this.data.template);
+	this.data.template.remove();
 	
 
 	this.data.dataContext = new DataContext(this.data.element, {
@@ -43,8 +44,8 @@ const Field = function(anElement, aContainer, aForm) {
 };
 
 Field.prototype.__addItem = function(aEvent) {
-	var item = {
-	    id : ("item-" + de.titus.core.UUID()),
+	let item = {
+	    id : ("item-" + UUID()),
 	    index : this.data.items.length,
 	    element : this.data.template.clone(),
 	    field : undefined
@@ -52,35 +53,35 @@ Field.prototype.__addItem = function(aEvent) {
 	item.element = this.data.template.clone();
 	item.element.attr("id", item.id);
 	item.element.attr("data-form-list-item", item.id);
-	if (item.element.attr("data-form-container-field") === undefined)
+	if (typeof item.element.attr("data-form-container-field") === undefined)
 		item.element.attr("data-form-container-field", "item");
-	item.element.formular_utils_SetInitializing();
+	//item.element.formular_utils_SetInitializing();
 
 	this.data.items.push(item);
 	item.element.appendTo(this.data.contentContainer);
 
-	EventUtils.handleEvent(item.element.find("[data-form-list-field-action-remove]"), [ "click" ], Field.prototype.__removeItem.bind(this));
+	
 
-	setTimeout(Field.prototype.__initializeItem.bind(this, item), 1);
-};
+	FieldUtils.buildField(item.element, this, this.data.form).then((function(aItem, aField){	    
+	    aItem.field = aField();
+	    aItem.dataContext = new DataContext(aItem.element,{
+	        data : (function(aFilter) {
+	            var data = this.getData(aFilter);
+	            if (data)
+	                return data.value;
+	        }).bind(aField),
+	        scope : "$item"
+	    });
+	    
+	    EventUtils.handleEvent(aItem.element.find("[data-form-list-field-action-remove]"), [ "click" ], Field.prototype.__removeItem.bind(this));
 
-Field.prototype.__initializeItem = function(aItem) {
-	aItem.field = aItem.element.formular_Field();
-	aItem.element.formular_DataContext({
-	    data : (function(aFilter) {
-		    var data = this.field.getData(aFilter);
-		    if (data)
-			    return data.value;
-	    }).bind(aItem),
-	    scope : "$item"
-	});
+	    //aItem.element.formular_initMessages();
 
-	aItem.element.formular_initMessages();
-
-	aItem.element.formular_utils_SetInitialized();
-	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALUE_CHANGED);
-	this.doValidate();
-	this.__doCheckAddButton();
+	    //aItem.element.formular_utils_SetInitialized();
+	    EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALUE_CHANGED);
+	    this.doValidate();
+	    this.__doCheckAddButton();
+	}).bind(this, item));
 };
 
 Field.prototype.__removeItem = function(aEvent) {
@@ -145,22 +146,22 @@ Field.prototype.__handleValidationEvent = function(aEvent) {
 
 
 Field.prototype.doValidate = function(force) {
-	var oldValid = this.data.valid;
-	if (this.data.items.length === 0)
-		this.data.valid = !this.data.required;
-	else if (this.data.items.length < this.data.min)
-		this.data.valid = false;
-	else if (this.data.max !== 0 && this.data.items.length > this.data.max)
-		this.data.valid = false;
-	else
-		this.data.valid = this.__isListItemsValid();
-
-	if (oldValid != this.data.valid) {
-		if (this.data.valid)
-			this.data.element.formular_utils_SetValid();
-		else
-			this.data.element.formular_utils_SetInvalid();
-	}
+//	var oldValid = this.data.valid;
+//	if (this.data.items.length === 0)
+//		this.data.valid = !this.data.required;
+//	else if (this.data.items.length < this.data.min)
+//		this.data.valid = false;
+//	else if (this.data.max !== 0 && this.data.items.length > this.data.max)
+//		this.data.valid = false;
+//	else
+//		this.data.valid = this.__isListItemsValid();
+//
+//	if (oldValid != this.data.valid) {
+//		if (this.data.valid)
+//		    HtmlStateUtils.doSetValid(this.data.element);
+//		else
+//		    HtmlStateUtils.doSetInvalid(this.data.element);
+//	}
 
 	return this.data.valid;
 };
