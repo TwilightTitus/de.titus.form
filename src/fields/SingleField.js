@@ -1,13 +1,15 @@
-import Constants from "src/Constants";
+// dependencies from libs
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
-import DataContext from "src/DataContext";
-import EventUtils from "src/utils/EventUtils";
-import HtmlStateUtil from "src/utils/HtmlStateUtils";
 
+//own dependencies
+import Constants from "../Constants";
+import DataContext from "../DataContext";
+import EventUtils from "../utils/EventUtils";
+import HtmlStateUtil from "../utils/HtmlStateUtils";
+import Registry from "../Registry";
+import Condition from "../Condition";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.SingleField");
-
-
 const Field = function(anElement, aContainer, aForm) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("constructor");
@@ -39,7 +41,7 @@ Field.prototype.__init = function() {
         scope : "$field"
     });
 
-	//this.data.controller = de.titus.form.Registry.getFieldController(this.data.type, this.data.element);
+	this.data.controller = Registry.getFieldController(this.data.type, this.data.element);
 	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
 	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.VALIDATION_VALID, Constants.EVENTS.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
 
@@ -48,9 +50,8 @@ Field.prototype.__init = function() {
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
 	
+	this.data.condition = ConditionBuilder(this.data.element, this.data.container, this.data.form);
 	
-	
-//	this.data.element.formular_Condition();
 //	this.data.element.formular_Validation();
 
 	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);

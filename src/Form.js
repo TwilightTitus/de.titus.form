@@ -26,24 +26,16 @@ const Form = function(aElement) {
 	this.data.dataContext = new DataContext(aElement, {
 		data : Form.prototype.getData.bind(this)
 	});
-	
-	
-	
 
 	HtmlStateUtils.doSetInitializing(this.data.element);
-	
-};
-
-Form.prototype.__init = function() {
-	
 };
 
 Form.prototype.getData = function(aFilter, aModel) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\")" ]);
 
-	var result = {};
-	var pages = this.data.element.Form_PageController().data.pages;
+	let result = {};
+	let pages = this.data.element.Form_PageController().data.pages;
 	for (var i = 0; i < pages.length; i++) {
 		var data = pages[i].getData(aFilter);
 		if (data)
