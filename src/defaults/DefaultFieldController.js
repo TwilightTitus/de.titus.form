@@ -10,7 +10,6 @@ import HtmlStateUtil from "../utils/HtmlStateUtils";
 import FieldUtils from "../fields/FieldUtils";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.defaults.DefaultFieldController");
-
 const DefaultFieldController = function(aElement) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("constructor");

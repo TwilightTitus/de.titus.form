@@ -7,7 +7,7 @@ import Constants from "./Constants";
 import DataContext from "./DataContext";
 import DataUtils from "./utils/DataUtils";
 import EventUtils from "./utils/EventUtils";
-import HtmlStateUtil from "./utils/HtmlStateUtils";
+import HtmlStateUtils from "./utils/HtmlStateUtils";
 import FieldUtils from "./fields/FieldUtils";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.Message");
@@ -16,7 +16,7 @@ const EXPRESSION_RESOLVER = ExpressionResolver.DEFAULT;
 const Message = function(aExpression, aElement, aContainer, aForm) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("constructor");
-
+	
 	this.data = {
 		element : aElement,
 		container : aContainer,
@@ -25,14 +25,14 @@ const Message = function(aExpression, aElement, aContainer, aForm) {
 		timeoutId : undefined
 	};
 	HtmlStateUtils.doSetInactive(this.data.element);
-	setTimeout(Message.prototype.__init.bind(this), 1);
+	this.__init();
 };
 
 Message.prototype.__init = function() {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("__init()");
 	
-	utils.EventUtils.handleEvent(this.data.container.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doMessage.bind(this));
+	EventUtils.handleEvent(this.data.container.data.element, [ Constants.EVENTS.INITIALIZED, Constants.EVENTS.FIELD_VALUE_CHANGED ], Message.prototype.__doMessage.bind(this));
 };
 
 Message.prototype.__doMessage = function(aEvent) {
@@ -47,17 +47,17 @@ Message.prototype.__doCheck = function(aEvent) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "__doCheck(\"", aEvent, "\")" ]);
 
-	var data = this.data.dataContext.getData({
+	let data = this.data.container.data.dataContext.getData({
 		condition : false,
 		validate : true
 	});
 
-	data = data.utils.DataUtils.toModel(data, "object");
+	data = DataUtils.toModel(data, "object");
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "__doCheck() -> data context: \"", data,
 				"\", expression: \"", this.data.expression, "\"" ]);
 
-	var result = this.data.expressionResolver.resolveExpression(
+	let result = EXPRESSION_RESOLVER.resolveExpression(
 			this.data.expression, data, false);
 	if (result)
 		this.data.element.formular_utils_SetActive();
@@ -65,19 +65,23 @@ Message.prototype.__doCheck = function(aEvent) {
 		this.data.element.formular_utils_SetInactive();
 };
 
-$.fn.formular_initMessages = function() {
-	return this.find("[data-form-message]").formular_Message();
-};
-
-
-const MessageBuilder = function(aElement, aContainer, aForm){	
-	return new Promise(function(resolve){
-		let expression = aElement.attr("data-form-message") || "").trim();	
-		if(typeof expression !== "undefined")
-			requestAnimationFrame((function(){				
-				resolve(this);
-			}).bind(new Message(expression, aElement, aContainer, aForm)));
-	});	
+const MessageBuilder = function(aElement, aContainer, aForm){
+	if(aElement instanceof NodeList){		
+		let messages = [];
+		aElement.forEach(function(aItem){
+			messages.push(MessageBuilder(aItem, aContainer, aForm));
+		});
+		return Promise.all(messages);
+	}
+	else {
+		return new Promise(function(resolve){			
+			requestAnimationFrame(function(){
+				let expression = (aElement.attr("data-form-message") || "").trim();	
+				if(typeof expression !== "undefined")
+					resolve(new Message(expression, aElement, aContainer, aForm));
+			});
+		});
+	}
 };
 
 export {Message, MessageBuilder};

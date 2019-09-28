@@ -7,7 +7,8 @@ import DataContext from "../DataContext";
 import EventUtils from "../utils/EventUtils";
 import HtmlStateUtil from "../utils/HtmlStateUtils";
 import Registry from "../Registry";
-import Condition from "../Condition";
+import ConditionBuilder from "../Condition";
+import MessageBuilder from "../Message";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.SingleField");
 const Field = function(anElement, aContainer, aForm) {
@@ -50,7 +51,9 @@ Field.prototype.__init = function() {
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
 	
-	this.data.condition = ConditionBuilder(this.data.element, this.data.container, this.data.form);
+	ConditionBuilder(this.data.element, this.data.container, this.data.form);
+	MessageBuilder(this.data.element.find("[data-form-message]"), this, this.data.form);
+	
 	
 //	this.data.element.formular_Validation();
 

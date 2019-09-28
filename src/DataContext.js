@@ -15,7 +15,7 @@ const DataContext = function(aElement, aOption) {
 };
 DataContext.prototype.getParentContext = function() {
 	if (!this.data.init) {
-		this.data.parentContext = DataContext.findParentContext(this.data.element);
+		this.data.parentContext = DataContext.findParentDataContext(this.data.element);
 		this.data.init = true;
 	}
 
@@ -54,7 +54,7 @@ DataContext.findContext = function(aElement) {
 };
 
 DataContext.findParentDataContext = function(aElement) {
-	return findContext(aElement.parent());
+	return DataContext.findContext(aElement.parent());
 };
 
 export default DataContext;

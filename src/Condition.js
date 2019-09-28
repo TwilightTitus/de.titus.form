@@ -47,11 +47,11 @@ Condition.prototype.__doCheck = function(aEvent) {
 	if (aEvent.type != Constants.EVENTS.INITIALIZED && aEvent.type != Constants.EVENTS.FIELD_VALUE_CHANGED)
 		aEvent.stopPropagation();
 
-	if (aEvent.currentTarget == this.data.element && (aEvent.type == Constants.EVENTS.CONDITION_STATE_CHANGED || aEvent.Type == Constants.EVENTS.VALIDATION_STATE_CHANGED || aEvebt.type == Constants.EVENTS.FIELD_VALIDATED))
+	if (aEvent.currentTarget == this.data.element && (aEvent.type == Constants.EVENTS.CONDITION_STATE_CHANGED || aEvent.Type == Constants.EVENTS.VALIDATION_STATE_CHANGED || aEvent.type == Constants.EVENTS.FIELD_VALIDATED))
 		; // IGNORE CONDTION_STATE_CHANGE AND VALIDATION_STATE_CHANGED
 	// ON SELF
 	else if (this.data.expression === "")
-		utils.EventUtils.triggerEvent(this.data.element, Constants.EVENTS.CONDITION_MET);
+		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.CONDITION_MET);
 	else {
 		let data = this.data.container.data.dataContext.getData({
 		    condition : true,
@@ -71,13 +71,12 @@ Condition.prototype.__doCheck = function(aEvent) {
 };
 
 const ConditionBuilder = function(aElement, aContainer, aForm){
-	return new Promise(function(resolve){
-		let expression = (aElement.attr("data-form-condition") || "").trim();
-		if(typeof expression !== "undefined")		
-			requestAnimationFrame((function(){
-				
-				resolve(this);
-			}).bind(new Condition(expression, aElement, aContainer, aForm)));
+	return new Promise(function(resolve){		
+		requestAnimationFrame(function(){
+			let expression = (aElement.attr("data-form-condition") || "").trim();
+			if(typeof expression !== "undefined")		
+				resolve(new Condition(expression, aElement, aContainer, aForm));
+		});
 	});
 };
 
