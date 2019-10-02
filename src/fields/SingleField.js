@@ -25,7 +25,7 @@ const Field = function(anElement, aContainer, aForm) {
 	    type : (anElement.attr("data-form-field-type") || "default").trim(),
 	    required : (anElement.attr("data-form-required") !== undefined),
 	    requiredOnActive : (anElement.attr("data-form-required") === "on-condition-true"),
-	    condition : undefined,
+	    condition : false,
 	    valid : undefined,
 	    controller : undefined
 	};
@@ -51,7 +51,10 @@ Field.prototype.__init = function() {
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
 	
-	ConditionBuilder(this.data.element, this.data.container, this.data.form);
+	ConditionBuilder(this.data.element, this.data.container, this.data.form).then((function(aCondition){
+		if(typeof aCondition === "undefined")
+			this.data.condition = true;		
+	}).bind(this));
 	MessageBuilder(this.data.element.find("[data-form-message]"), this, this.data.form);
 	
 	
@@ -67,7 +70,7 @@ Field.prototype.__changeConditionState = function(aEvent) {
 	aEvent.preventDefault();
 	aEvent.stopPropagation();
 
-	var condition = false;
+	let condition = false;
 	if (aEvent.type == Constants.EVENTS.CONDITION_MET)
 		condition = true;
 
@@ -150,7 +153,8 @@ Field.prototype.getData = function(aFilter) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "getData(\"", aFilter, "\")" ]);
 
-	var result;
+	debugger;
+	let result;
 	if (aFilter.example)
 		result = this.data.controller.getExample();
 	else if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition))
@@ -169,7 +173,7 @@ Field.prototype.getData = function(aFilter) {
 const FieldBuilder = function(anElement, aContainer, aForm){
     return new Promise(function(resolve){
         requestAnimationFrame(function(){
-            //TODO init method into builder function
+            //TODO init method into builder function        	
             resolve(new Field(anElement, aContainer, aForm));
         });        
     });

@@ -24,14 +24,8 @@ const Message = function(aExpression, aElement, aContainer, aForm) {
 		expression : aExpression,
 		timeoutId : undefined
 	};
-	HtmlStateUtils.doSetInactive(this.data.element);
-	this.__init();
-};
-
-Message.prototype.__init = function() {
-	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug("__init()");
 	
+	HtmlStateUtils.doSetInactive(this.data.element);
 	EventUtils.handleEvent(this.data.container.data.element, [ Constants.EVENTS.INITIALIZED, Constants.EVENTS.FIELD_VALUE_CHANGED ], Message.prototype.__doMessage.bind(this));
 };
 
@@ -39,8 +33,7 @@ Message.prototype.__doMessage = function(aEvent) {
 	if (this.data.timeoutId)
 		clearTimeout(this.data.timeoutId);
 
-	this.data.timeoutId = setTimeout(Message.prototype.__doCheck.bind(this,
-			aEvent), 300);
+	this.data.timeoutId = setTimeout(Message.prototype.__doCheck.bind(this, aEvent), 300);
 };
 
 Message.prototype.__doCheck = function(aEvent) {
@@ -76,9 +69,16 @@ const MessageBuilder = function(aElement, aContainer, aForm){
 	else {
 		return new Promise(function(resolve){			
 			requestAnimationFrame(function(){
-				let expression = (aElement.attr("data-form-message") || "").trim();	
-				if(typeof expression !== "undefined")
-					resolve(new Message(expression, aElement, aContainer, aForm));
+				let message = aElement.data("de.titus.form.Message");
+				if(typeof message === "undefined"){
+					let expression = (aElement.attr("data-form-message") || "").trim();	
+					if(expression.length > 0){
+						message = new Message(expression, aElement, aContainer, aForm);
+						aElement.data("de.titus.form.Message", message);
+					}
+				}
+				
+				resolve(message);
 			});
 		});
 	}

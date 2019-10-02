@@ -73,9 +73,15 @@ Condition.prototype.__doCheck = function(aEvent) {
 const ConditionBuilder = function(aElement, aContainer, aForm){
 	return new Promise(function(resolve){		
 		requestAnimationFrame(function(){
-			let expression = (aElement.attr("data-form-condition") || "").trim();
-			if(typeof expression !== "undefined")		
-				resolve(new Condition(expression, aElement, aContainer, aForm));
+			let condition = aElement.data("de.titus.form.Condition");
+			if(typeof condition === "undefined"){
+				let expression = (aElement.attr("data-form-condition") || "").trim();
+				if(expression.length > 0){		
+					condition = new Condition(expression, aElement, aContainer, aForm);
+					aElement.data("de.titus.form.Condition", condition);
+				}
+			}
+			resolve(condition);
 		});
 	});
 };

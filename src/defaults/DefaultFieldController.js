@@ -1,7 +1,7 @@
 // dependencies from libs
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
 
-//own dependencies
+// own dependencies
 import Registry from "../Registry";
 import Constants from "../Constants";
 import DataContext from "../DataContext";
@@ -48,22 +48,17 @@ DefaultFieldController.prototype.__init = function() {
 		} else if (this.element.find("input[type='file']").length == 1) {
 			this.type = "file";
 			this.element.find("input[type='file']").on("change", DefaultFieldController.prototype.readFileData.bind(this));
-		} else {
+		} else if (this.element.find("input[type='text']").length == 1){
 			this.type = "text";
-			this.element.find("input, textarea").on("keyup change", (function(aEvent) {
-				if (this.timeoutId !== undefined) {
-					window.clearTimeout(this.timeoutId);
-				}
-
-				this.timeoutId = window.setTimeout((function() {
-					this.valueChanged(aEvent);
-				}).bind(this), 300);
-
-			}).bind(this));
+			this.element.find("input").on("input", DefaultFieldController.prototype.__textInput.bind(this));
+		}else if (this.element.find("textarea").length == 1){
+			this.type = "textarea";
+			this.element.find("textarea").on("input", DefaultFieldController.prototype.__textInput.bind(this));
 		}
-
-		this.data.type = this.type;
 	}
+
+	this.data.type = this.type;
+	
 
 	EventUtils.handleEvent(this.element, Constants.EVENTS.FIELD_SHOW, (function() {
 		if (this.type == "select")
@@ -81,6 +76,15 @@ DefaultFieldController.prototype.__init = function() {
 
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("init() -> detect type: " + this.type);
+};
+
+DefaultFieldController.prototype.__textInput = function(aEvent) {
+	if (typeof this.timeoutId !== "undefined")
+		clearTimeout(this.timeoutId);
+
+	this.timeoutId = window.setTimeout((function(aEvent) {
+		this.valueChanged(aEvent);
+	}).bind(this,aEvent), 300);
 };
 
 DefaultFieldController.prototype.readFileData = function(aEvent) {
@@ -153,8 +157,12 @@ DefaultFieldController.prototype.getValue = function() {
 		return values.length > 0 ? values : undefined;
 	} else if (this.type == "file")
 		return this.fileData;
-	else {
-		value = this.element.find("input, textarea").first().val();
+	else if(this.type == "text"){
+		value = this.element.find("input").first().val();
+		if (value && value.trim() !== "")
+			return value;
+	}else if(this.type == "textarea"){
+		value = this.element.find("textarea").first().val();
 		if (value && value.trim() !== "")
 			return value;
 	}
