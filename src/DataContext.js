@@ -1,4 +1,5 @@
 import LoggerFactory from "modules/de.titus.logging/src/LoggerFactory";
+import ObjectUtils from "modules/de.titus.core/src/utils/ObjectUtils";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.DataContext");
 
@@ -14,10 +15,8 @@ const DataContext = function(aElement, aOption) {
 	aElement.attr("data-form-data-context", "");
 };
 DataContext.prototype.getParentContext = function() {
-	if (!this.data.init) {
+	if (typeof this.data.parentContext === "undefined")
 		this.data.parentContext = DataContext.findParentDataContext(this.data.element);
-		this.data.init = true;
-	}
 
 	return this.data.parentContext;
 };
@@ -31,7 +30,7 @@ DataContext.prototype.getData = function(aFilter) {
 		if (this.data.scope)
 			context[this.data.scope] = data;
 		else
-			$.extend(context, data);//TODO build own function
+			ObjectUtils.extend(context, data);//TODO build own function
 	}
 
 	if (LOGGER.isDebugEnabled())
@@ -44,10 +43,11 @@ DataContext.getContext = function(aElement) {
 	return aElement.data("de.titus.form.DataContext");
 };
 
-DataContext.findContext = function(aElement) {
-    
+DataContext.findContext = function(aElement) {    
+	if(typeof aElement === "undefined")
+		return;	
     //TODO Optimize and Test with DataContext.getContext(aElement.parent("[data-form-data-context] | [data-form]"));
-	if (typeof aElement.attr("data-form-data-context") !== "undefined"|| typeof this.attr("data-form") !== "undefined")
+	else if (typeof aElement.attr("data-form-data-context") !== "undefined"|| typeof aElement.attr("data-form") !== "undefined")
 		return DataContext.getContext(aElement);
 	else
 		return DataContext.findContext(aElement.parent());

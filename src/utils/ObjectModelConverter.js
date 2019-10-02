@@ -15,21 +15,21 @@ const ObjectModelConverter = function(aData) {
 	    if (aData.$type == "single-field")
 		    return aData.value;
 	    else
-		    return Converter(aData.value);
+		    return ObjectModelConverter(aData.value);
     } else if (Array.isArray(aData)) {
 	    result = [];
 	    for (let i = 0; i < aData.length; i++)
-		    result.push(Converter(aData[i]));
+		    result.push(ObjectModelConverter(aData[i]));
     } else if (typeof aData === "object") {
 	    result = {};
 	    for ( let name in aData)
-		    result[name] = Converter(aData[name]);
+		    result[name] = ObjectModelConverter(aData[name]);
     } else
 	    return aData;
 
     return result;
 };
-DataUtils.addConverter(ObjectModelConverter);
+DataUtils.addConverter("object", ObjectModelConverter);
 
 export default ObjectModelConverter;
 

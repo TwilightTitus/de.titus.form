@@ -4,6 +4,7 @@ const configs = [
 	{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender"]}
 	,{"filter": "de.titus.form", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]}
 	,{"filter": "de.titus.form.utils", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]}
+	,{"filter": "de.titus.form.Message", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]}
 //	{"filter": "de.titus.form.Form", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]},
 //	{"filter": "de.titus.form.Pager", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]},
 //    {"filter": "de.titus.form.Page", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]},

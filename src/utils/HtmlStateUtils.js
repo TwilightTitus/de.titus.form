@@ -43,7 +43,7 @@ const HtmlStateUtils = {
 	doRemoveAddClass : doRemoveAddClass,	
 	doSetInitializing : doSetInitializing,	
 	doSetInitialized : doSetInitialized,
-	doSetActive : doSetInitialized,
+	doSetActive : doSetActive,
 	doSetInactive : doSetInactive,
 	doSetValid : doSetValid,
 	doSetInvalid : doSetInvalid,

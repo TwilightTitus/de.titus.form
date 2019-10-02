@@ -5,6 +5,7 @@ import ExpressionResolver from "modules/de.titus.core/src/ExpressionResolver";
 //own dependencies
 import Constants from "./Constants";
 import DataContext from "./DataContext";
+import DataUtils from "./utils/DataUtils";
 import EventUtils from "./utils/EventUtils";
 import HtmlStateUtils from "./utils/HtmlStateUtils";
 import PagerBuilder from "./Pager";
@@ -20,7 +21,8 @@ const Form = function(aElement) {
 	this.data = {
 	    element : aElement,
 	    name : aElement.attr("data-form"),
-	    state : Constants.STATE.INPUT	    
+	    state : Constants.STATE.INPUT,
+	    pager : undefined
 	};	
 
 	this.data.dataContext = new DataContext(aElement, {
@@ -35,15 +37,15 @@ Form.prototype.getData = function(aFilter, aModel) {
 		LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\")" ]);
 
 	let result = {};
-	let pages = this.data.element.Form_PageController().data.pages;
-	for (var i = 0; i < pages.length; i++) {
-		var data = pages[i].getData(aFilter);
+	let pages = this.data.pager.data.pages;
+	for (let i = 0; i < pages.length; i++) {
+		let data = pages[i].getData(aFilter);
 		if (data)
 			result = $.extend(result, data);
 	}
 
 	if (aModel)
-		result = de.titus.form.data.utils.DataUtils.toModel(result, aModel);
+		result = DataUtils.toModel(result, aModel);
 
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\") -> result: \"", result, "\"" ]);

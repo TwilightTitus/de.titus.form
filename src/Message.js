@@ -20,6 +20,7 @@ const Message = function(aExpression, aElement, aContainer, aForm) {
 	this.data = {
 		element : aElement,
 		container : aContainer,
+		dataContext : aContainer.data.dataContext,
 		form : aForm,
 		expression : aExpression,
 		timeoutId : undefined
@@ -40,22 +41,20 @@ Message.prototype.__doCheck = function(aEvent) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "__doCheck(\"", aEvent, "\")" ]);
 
-	let data = this.data.container.data.dataContext.getData({
+	let data = this.data.dataContext.getData({
 		condition : false,
 		validate : true
 	});
 
-	data = DataUtils.toModel(data, "object");
+	data = DataUtils.toModel(data);
 	if (LOGGER.isDebugEnabled())
-		LOGGER.logDebug([ "__doCheck() -> data context: \"", data,
-				"\", expression: \"", this.data.expression, "\"" ]);
+		LOGGER.logDebug([ "__doCheck() -> data context: \"", data,"\", expression: \"", this.data.expression, "\"" ]);
 
-	let result = EXPRESSION_RESOLVER.resolveExpression(
-			this.data.expression, data, false);
+	let result = EXPRESSION_RESOLVER.resolveExpression(this.data.expression, data, false);
 	if (result)
-		this.data.element.formular_utils_SetActive();
+		HtmlStateUtils.doSetActive(this.data.element);
 	else
-		this.data.element.formular_utils_SetInactive();
+		HtmlStateUtils.doSetInactive(this.data.element);
 };
 
 const MessageBuilder = function(aElement, aContainer, aForm){

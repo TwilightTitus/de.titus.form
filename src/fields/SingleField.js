@@ -9,6 +9,7 @@ import HtmlStateUtil from "../utils/HtmlStateUtils";
 import Registry from "../Registry";
 import ConditionBuilder from "../Condition";
 import MessageBuilder from "../Message";
+import ValidationBuilder from "../Validation";
 
 const LOGGER = LoggerFactory.newLogger("de.titus.form.fields.SingleField");
 const Field = function(anElement, aContainer, aForm) {
@@ -51,15 +52,22 @@ Field.prototype.__init = function() {
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Field.prototype.__summary.bind(this));
     EventUtils.handleEvent(containerElement, [Constants.EVENTS.STATE_INACTIVE], Field.prototype.__inactive.bind(this));
 	
-	ConditionBuilder(this.data.element, this.data.container, this.data.form).then((function(aCondition){
+	ConditionBuilder(this.data.element, this.data.container, this.data.form)
+	.then((function(aCondition){
 		if(typeof aCondition === "undefined")
 			this.data.condition = true;		
 	}).bind(this));
 	MessageBuilder(this.data.element.find("[data-form-message]"), this, this.data.form);
 	
+	ValidationBuilder(this, this.data.container, this.data.form)
+	.then((function(aValidation){
+		if(typeof aValidation === "undefined")
+			this.data.valid = true;
+		else
+			this.data.validation = aValidation;
+			
+	}).bind(this));
 	
-//	this.data.element.formular_Validation();
-
 	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.INITIALIZED);
 };
 
@@ -101,9 +109,9 @@ Field.prototype.__changeValidationState = function(aEvent) {
 		this.data.valid = valid;
 
 		if (this.data.valid)
-			this.data.element.formular_utils_SetValid();
+			HtmlStateUtil.doSetValid(this.data.element);
 		else
-			this.data.element.formular_utils_SetInvalid();
+			HtmlStateUtil.doSetInvalid(this.data.element);
 
 		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
 	}
@@ -113,11 +121,11 @@ Field.prototype.__changeValidationState = function(aEvent) {
 
 Field.prototype.doValidate = function(force) {
 	if (force) {
-		this.data.valid = this.data.element.formular_Validation().doValidate();
+		this.data.valid = this.data.validation.doValidate();
 		if (this.data.valid)
-			this.data.element.formular_utils_SetValid();
+			HtmlStateUtil.doSetValid(this.data.element);
 		else
-			this.data.element.formular_utils_SetInvalid();
+			HtmlStateUtil.doSetInvalid(this.data.element);
 	}
 
 	return this.data.valid;
@@ -153,7 +161,6 @@ Field.prototype.getData = function(aFilter) {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug([ "getData(\"", aFilter, "\")" ]);
 
-	debugger;
 	let result;
 	if (aFilter.example)
 		result = this.data.controller.getExample();
