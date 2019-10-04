@@ -15,7 +15,7 @@ const buildField = function(anElement, aContainer, aForm) {
     if(LOGGER.isDebugEnabled)
         LOGGER.logDebug(["buildField()", anElement, aContainer, aForm]);
     
-    return new Promise(function(){
+    return new Promise(function(resolve){
         let field = anElement.data("de.titus.form.Field");
         if(typeof field !== "undefined")
             return field;
@@ -30,7 +30,7 @@ const buildField = function(anElement, aContainer, aForm) {
         else
             return;
         
-        return builder(anElement, aContainer, aForm).then(function(aField){
+       return builder(anElement, aContainer, aForm).then(function(aField){
             anElement.data("de.titus.form.Field", aField);            
             return aField;
         });
@@ -40,7 +40,7 @@ const buildField = function(anElement, aContainer, aForm) {
 const buildChildFields = function(anElement, aContainer, aForm) {
     if(LOGGER.isDebugEnabled)
         LOGGER.logDebug(["buildChildFields()", anElement, aContainer, aForm]); 
-    
+
     let results = [];
     for(let i = 0; i < anElement.children.length; i++){
         let item = anElement.children.item(i);
@@ -49,10 +49,9 @@ const buildChildFields = function(anElement, aContainer, aForm) {
         else {
             let fields = buildChildFields(item, aContainer, aForm);
             if (fields)
-                results.concat(fields);
+                results = results.concat(fields);
         }
     }
-    
     return Promise.all(results);
 };
 

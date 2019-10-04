@@ -56,11 +56,10 @@ Validation.prototype.__handleEvent = function(aEvent) {
 		LOGGER.logDebug([ "__handleEvent(\"", aEvent, "\")" ]);
 
 	aEvent.preventDefault();
-
 	if (aEvent.type != Constants.EVENTS.INITIALIZED && aEvent.type != Constants.EVENTS.FIELD_VALUE_CHANGED)
 		aEvent.stopPropagation();
 
-	if (aEvent.currentTarget == this.data.element && aEvent.Type == Constants.EVENTS.VALIDATION_STATE_CHANGED)
+	if (aEvent.target == this.data.element && aEvent.Type == Constants.EVENTS.VALIDATION_STATE_CHANGED)
 		return;
 
 	if (this.doValidate())

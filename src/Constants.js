@@ -29,12 +29,14 @@ const Constants = {
 		PAGE_HIDE : "form-page-hide",
 		PAGE_SUMMARY : "form-page-summary",
 		PAGE_SUBMITTED : "form-page-submitted",
+		PAGE_VALIDATED : "form-page-validated",		
 
 		FIELD_VALIDATED : "form-field-validated",
 		FIELD_SHOW : "form-field-show",
 		FIELD_HIDE : "form-field-hide",
 		FIELD_SUMMARY : "form-field-SUMMARY",
 		FIELD_VALUE_CHANGED : "form-field-value-changed",
+		FIELD_VALIDATED : "form-field-validated",
 
 		VALIDATION_STATE_CHANGED : "form-validation-state-changed",
 		VALIDATION_VALID : "form-validation-valid",

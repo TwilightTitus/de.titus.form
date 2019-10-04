@@ -101,21 +101,18 @@ Field.prototype.__changeValidationState = function(aEvent) {
 	aEvent.stopPropagation();
 
 	let valid = aEvent.type == Constants.EVENTS.VALIDATION_VALID;
-
 	if (this.data.valid != valid) {
 		if (LOGGER.isDebugEnabled())
-			LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" from " + this.data.valid + " -> " + valid);
-
+			LOGGER.logDebug(["__changeValidationState() for field \"", this.data.name, "\" from ", this.data.valid, " -> ", valid]);
+		
 		this.data.valid = valid;
-
 		if (this.data.valid)
 			HtmlStateUtil.doSetValid(this.data.element);
 		else
 			HtmlStateUtil.doSetInvalid(this.data.element);
 
 		EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
-	}
-
+	}	
 	EventUtils.triggerEvent(this.data.element, Constants.EVENTS.FIELD_VALIDATED);
 };
 

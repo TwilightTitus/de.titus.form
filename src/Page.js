@@ -8,10 +8,11 @@ import EventUtils from "./utils/EventUtils";
 import HtmlStateUtil from "./utils/HtmlStateUtils";
 import FieldUtils from "./fields/FieldUtils";
 
-const LOGGER = LoggerFactory.newLogger("de.titus.form.Page");
+const CLASSNAME = "de.titus.form.Page";
+const LOGGER = LoggerFactory.newLogger(CLASSNAME);
 
 
-export const Page = function(aElement, aForm){
+const Page = function(aElement, aForm){
     if (LOGGER.isDebugEnabled())
         LOGGER.logDebug("constructor");
     this.data = {
@@ -23,7 +24,7 @@ export const Page = function(aElement, aForm){
         step : (aElement.attr("data-form-step") || "").trim(),
         active : false,
         condition : undefined,
-        valid : undefined,
+        valid : false,
         fields : []
     };
     
@@ -31,6 +32,14 @@ export const Page = function(aElement, aForm){
         data : Page.prototype.getData.bind(this),
         scope : "$page"
    });
+   
+   
+   EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Page.prototype.__changeConditionState.bind(this));
+   EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_STATE_CHANGED, Constants.EVENTS.VALIDATION_STATE_CHANGED ], Page.prototype.doValidate.bind(this));
+   
+   EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_ACTIVE], Page.prototype.__active.bind(this));
+   EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Page.prototype.__summary.bind(this));
+   EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_INACTIVE], Page.prototype.__inactive.bind(this));
 };
 
 Page.prototype.__changeConditionState = function(aEvent) {
@@ -50,29 +59,39 @@ Page.prototype.__changeConditionState = function(aEvent) {
     }
 };
 
-Page.prototype.__changeValidationState = function(aEvent) {
-    if (LOGGER.isDebugEnabled())
-        LOGGER.logDebug([ "__changeValidationState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
+Page.prototype.doValidate = function() {
+	if(LOGGER.isDebugEnabled())
+		LOGGER.logDebug("doValidate()");
+	
+	let args = Array.from(arguments);	
+	if(args[0] instanceof Event)
+		 args.shift().preventDefault();
+	
+	let force = !!args.shift;
+	if (force) {
+		debugger;
+		let oldValid = this.data.valid;
+		this.data.valid = (function(){
+		    for (let i = 0; i < this.data.fields.length; i++) {
+			    let field = this.data.fields[i];
+			    let valid = force ? field.doValidate(force) : field.data.valid;
+			    if (!valid)
+				    return false;
+		    }
+		    return true;
+		}).call(this);
+		if (oldValid != this.data.valid) {
+			if (this.data.valid)
+				HtmlStateUtil.doSetValid(this.data.element);
+			else
+				HtmlStateUtil.doSetInvalid(this.data.element);
+		            
+			EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
+		 }
+	 }
 
-    aEvent.preventDefault();
-    this.doValidate(true);          
-};
-
-Page.prototype.doValidate = function(force) {
-//    if (force) {
-//        var oldValid = this.data.valid;
-//        this.data.valid = FormularUtils.isFieldsValid(this.data.fields, force);
-//        if (oldValid != this.data.valid) {
-//            if (this.data.valid)
-//                this.data.element.formular_utils_SetValid();
-//            else
-//                this.data.element.formular_utils_SetInvalid();
-//            
-//            EventUtils.triggerEvent(this.data.element, Constants.EVENTS.VALIDATION_STATE_CHANGED);
-//        }
-//    }
-
-    return this.data.valid;
+	 EventUtils.triggerEvent(this.data.element, Constants.EVENTS.PAGE_VALIDATED);
+	 return this.data.valid;
 };
 
 Page.prototype.__inactive = function() {
@@ -105,7 +124,7 @@ Page.prototype.getData = function(aFilter) {
     if (LOGGER.isDebugEnabled())
         LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
-    var result;
+    let result;
     if (aFilter.example)
         result = FormularUtils.toBaseModel(this.data.fields, aFilter);
     else if (this.data.active || (this.data.condition && this.data.valid))
@@ -127,34 +146,27 @@ Page.prototype.getData = function(aFilter) {
         return result;
 };
 
-export const PageBuilder = function(aElement, aForm){    
-    return new Promise(function(resolve){        
-        requestAnimationFrame((function(resolve) {
-            if (LOGGER.isDebugEnabled())
-                LOGGER.logDebug("init()");
-
-            EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Page.prototype.__changeConditionState.bind(this));
-            EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_STATE_CHANGED, Constants.EVENTS.VALIDATION_STATE_CHANGED ], Page.prototype.__changeValidationState.bind(this));
-            
-            EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_ACTIVE], Page.prototype.__active.bind(this));
-            EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_ACTIVE_SUMMARY], Page.prototype.__summary.bind(this));
-            EventUtils.handleEvent(this.data.element, [Constants.EVENTS.STATE_INACTIVE], Page.prototype.__inactive.bind(this));
-            
-            
-            FieldUtils.buildChildFields(this.data.element,this,this.data.form)
-            .then((function(theFields){
-                this.data.fields = theFields;
-                //this.data.element.formular_Condition();
-                EventUtils.triggerEvent(this.data.element, Constants.EVENTS.PAGE_INITIALIZED);
-                resolve(this);
-            }).bind(this));          
-
-
-        }).bind(new Page(aElement, aForm), resolve))
+const PageBuilder = function(aElement, aForm){    
+    return new Promise(function(resolve){
+        requestAnimationFrame(function() {
+        	let page = aElement.data(CLASSNAME);
+        	if(typeof page === "undefined"){        	
+	        	page = new Page(aElement, aForm);
+	        	FieldUtils.buildChildFields(aElement,page,aForm)
+	    		.then(function(theFields){
+	    			page.data.fields = theFields;
+		        	aElement.data(CLASSNAME, aPage);
+		        	resolve(page);
+		            EventUtils.triggerEvent(aElement, Constants.EVENTS.PAGE_INITIALIZED);
+		        });
+        	}
+        	else
+        		resolve(page);        	
+        });
     });
 };
 
-
+export { Page, PageBuilder};
 export default PageBuilder;
 
 
