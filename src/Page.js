@@ -69,7 +69,6 @@ Page.prototype.doValidate = function() {
 	
 	let force = !!args.shift;
 	if (force) {
-		debugger;
 		let oldValid = this.data.valid;
 		this.data.valid = (function(){
 		    for (let i = 0; i < this.data.fields.length; i++) {
