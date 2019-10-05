@@ -21,7 +21,7 @@ const Field = function(anElement, aContainer, aForm) {
 	    container : aContainer,
 	    form : aForm,
 	    parentDataContext : aContainer.data.dataContext,
-	    dataContext : new DataContext(this.data.element, {
+	    dataContext : new DataContext(anElement, {
 	        data : Field.prototype.getData.bind(this),
 	        scope : "$field"
 	    }),
