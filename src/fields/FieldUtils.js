@@ -31,7 +31,8 @@ const buildField = function(anElement, aContainer, aForm) {
             return;
         
        return builder(anElement, aContainer, aForm).then(function(aField){
-            anElement.data("de.titus.form.Field", aField);            
+            anElement.data("de.titus.form.Field", aField);
+            anElement.formField = aField;
             return aField;
         });
     });

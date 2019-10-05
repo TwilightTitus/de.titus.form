@@ -21,27 +21,23 @@ const Field = function(anElement, aContainer, aForm) {
 	    container : aContainer,
 	    form : aForm,
 	    parentDataContext : aContainer.data.dataContext,
-	    dataContext : undefined,
+	    dataContext : new DataContext(this.data.element, {
+	        data : Field.prototype.getData.bind(this),
+	        scope : "$field"
+	    }),
 	    name : (anElement.attr("data-form-field") || "").trim(),
 	    type : (anElement.attr("data-form-field-type") || "default").trim(),
-	    required : (anElement.attr("data-form-required") !== undefined),
+	    required : (typeof anElement.attr("data-form-required") !== "undefined"),
 	    requiredOnActive : (anElement.attr("data-form-required") === "on-condition-true"),
 	    condition : false,
 	    valid : undefined,
 	    controller : undefined
 	};
-	
-	this.__init();
 };
 
 Field.prototype.__init = function() {
 	if (LOGGER.isDebugEnabled())
 		LOGGER.logDebug("init()");
-	
-	this.data.dataContext = new DataContext(this.data.element, {
-        data : Field.prototype.getData.bind(this),
-        scope : "$field"
-    });
 
 	this.data.controller = Registry.getFieldController(this.data.type, this.data.element);
 	EventUtils.handleEvent(this.data.element, [ Constants.EVENTS.CONDITION_MET, Constants.EVENTS.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
